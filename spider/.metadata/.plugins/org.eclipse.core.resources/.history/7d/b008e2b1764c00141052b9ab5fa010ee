@@ -1,0 +1,97 @@
+package project;
+
+import java.util.Vector;
+import java.util.Iterator;
+import java.util.Queue;
+import java.util.LinkedList;
+import org.htmlparser.beans.StringBean;
+import org.htmlparser.Node;
+import org.htmlparser.NodeFilter;
+import org.htmlparser.Parser;
+import org.htmlparser.filters.AndFilter;
+import org.htmlparser.filters.NodeClassFilter;
+import org.htmlparser.tags.LinkTag;
+import org.htmlparser.util.NodeList;
+import org.htmlparser.util.ParserException;
+import java.util.StringTokenizer;
+import org.htmlparser.beans.LinkBean;
+import java.net.URL;
+
+public class Spider
+{
+	private String url;
+	private int pages;
+	
+	Spider(String _url, int _pages) {
+		url = _url;
+		pages = _pages;
+	}
+	
+	public Queue<String> crawlPage(String _url, Queue<String> links, Vector<String> processed) throws ParserException {
+		
+		// TODO: Extract keywords and insert to inverted file (Indexer)
+	
+		
+		// Extract and enqueue links that don't already exist 
+		LinkBean lb = new LinkBean();
+		lb.setURL(_url);
+		URL[] urls = lb.getLinks();
+	
+		for(int i = 0; i < urls.length; i++) {
+			String current = urls[i].toString();
+			if(!processed.contains(current) && !links.contains(current))
+				links.add(current);
+		}
+		
+		return links;
+	}
+	
+	public void crawl() throws ParserException {
+		Queue<String> queue = new LinkedList<String>();
+		Vector<String> processed = new Vector<String>();
+		queue.add(this.url);
+
+		int numPages = this.pages;
+		
+		while(!queue.isEmpty() && numPages > 0) {
+			
+			String next = queue.remove();
+			System.out.println(numPages + "/" + this.pages + " pages remaining. Crawling " + next + "...");
+			processed.add(next);
+			
+			queue = this.crawlPage(next, queue, processed);
+			
+			numPages--;
+		}
+		
+		System.out.println("\nFinished! " + pages + " pages crawled in total.");
+
+////	FOR DEBUGGING:		
+//		Iterator<String> it = processed.iterator();
+//		int i = 1;
+//		while(it.hasNext()) {
+//			System.out.println(i + ": " + it.next());
+//			i++;
+//		}
+		
+//		Iterator<String> it2 = queue.iterator();
+//		while(it2.hasNext()) {
+//			System.out.println(i + ": " + it2.next());
+//			i++;
+//		}
+	}
+	
+	public static void main (String[] args)
+	{
+		try
+		{
+			Spider crawler = new Spider("http://www.cse.ust.hk/", 30);
+			crawler.crawl();
+		}
+		catch (ParserException e) {
+			e.printStackTrace ();
+		}
+
+	}
+}
+	
