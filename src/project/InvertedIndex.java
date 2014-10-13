@@ -9,23 +9,14 @@ import java.util.Vector;
 import java.io.IOException;
 import java.io.Serializable;
 
-class Posting implements Serializable
-{
-	public String doc;
-	public int freq;
-	Posting(String doc, int freq)
-	{
-		this.doc = doc;
-		this.freq = freq;
-	}
-}
-
 class urlInfo {
 	public String url;
 	public int parent;
-	public urlInfo(String _url, int _parent) {
+	public int[] children;
+	public urlInfo(String _url, int _parent, int[] children) {
 		url = _url;
 		parent = _parent;
+		children = children;
 	}
 }
 
@@ -52,11 +43,7 @@ public class InvertedIndex
 	{
 		recman.commit();
 		recman.close();		
-	} 
-	public void commit() throws IOException
-	{
-		recman.commit();		
-	} 
+	}
 
 	public void addEntry(String id, String newEntry) throws IOException
 	{

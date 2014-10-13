@@ -37,12 +37,11 @@ public class Spider
 		
 		crawl_recursive(links, crawled, this.pages);
 		
-		index.commit();
 //		index.printAll(); // DEBUG
 		System.out.println("\nComplete! " + pages + " pages crawled in total.");
 	}
 	
-	public void crawl_recursive(Queue<String> links, List<String> crawled, int numPages) throws IOException {
+	private void crawl_recursive(Queue<String> links, List<String> crawled, int numPages) throws IOException {
 		if(links.isEmpty() || numPages < 1) return;
 		
 		String _url = links.remove();
@@ -66,6 +65,10 @@ public class Spider
 		}
 		
 		crawl_recursive(links, crawled, numPages-1);
+	}
+	
+	public InvertedIndex Index() {
+		return index;
 	}
 	
 	public static void main (String[] args) {
