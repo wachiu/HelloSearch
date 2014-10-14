@@ -72,18 +72,22 @@ public class Spider
 				Elements urls = doc.select("a[href]");
 				info.title = doc.title();
 				info.lastModified = cr.header("Last-Modified");
-				info.addParent(cur.parent);
 				info.key = Integer.toString(id);
+				
+				if(cur.parent != -1) {
+					info.addParent(cur.parent);
+					urlInfo tmp = index.getEntry(Integer.toString(cur.parent));
+					tmp.addChildren(id);
+					index.addEntry(tmp.key, tmp);
+				}
 				
 				for (Element a : urls) {
 		        	String current = a.attr("abs:href");
-//		        	if(!crawled.contains(current) && !links.contains(current) && !info.url.equals(current))
 		        	links.add(new urlTemp(current, id));
 		        }
 
 				index.addEntry(Integer.toString(id), info);
 				urlIdIndex.addEntry(info.url, Integer.toString(id));
-//		        crawled.add(info.url);
 			}
 			catch(UnsupportedMimeTypeException mte) {
 				System.out.println("UnsupportedMimeTypeException!");
@@ -93,6 +97,9 @@ public class Spider
 			}
 			catch(HttpStatusException hse) {
 				System.out.println("HttpStatusException"); // TODO: Skip
+			}
+			catch(Exception e) {
+				System.out.println("Generic exception");
 			}
 			crawl_recursive(links, crawled, numPages-1);
 			

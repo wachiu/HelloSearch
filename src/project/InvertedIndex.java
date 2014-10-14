@@ -18,18 +18,22 @@ class urlInfo implements Serializable {
 	public String title;
 	public int size;
 	public List<Integer> parent;
-//	public List<Integer> children;
+	public List<Integer> children;
 	public String lastModified;
 	
 	
 	public urlInfo(String url, int parent) {
 		this.parent = new ArrayList<Integer>();
+		this.children = new ArrayList<Integer>();
 		this.addParent(parent);
 		this.url = url;
 	}
 	
 	public void addParent(int id) {
 		if(!parent.contains(id) && id != -1) this.parent.add(id);
+	}
+	public void addChildren(int id) {
+		if(!children.contains(id) && id != -1) this.children.add(id);
 	}
 	
 //	public urlInfo(String url, String title, int size, int[] children, int parent) {
@@ -107,6 +111,11 @@ public class InvertedIndex
 			for(int i = 0; i < info.parent.size(); i++) {
 				System.out.print((info.parent.get(i)) + " ");
 			}
+			System.out.print("\nChildren ID(s): ");
+			for(int i = 0; i < info.children.size(); i++) {
+				System.out.print((info.children.get(i)) + " ");
+			}
+			if(info.children.size() == 0) System.out.print("None");
 		}
 	}	
 	public int count() throws IOException {
