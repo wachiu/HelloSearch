@@ -109,8 +109,14 @@ public class Spider
 			
 			// TODO: Check last modified date
 			
-			entry.addParent(cur.parent);
-			index.addEntry(entry.key, entry);
+			if(cur.parent != -1) {
+				entry.addParent(cur.parent);
+				index.addEntry(entry.key, entry);
+				
+				urlInfo tmp = index.getEntry(Integer.toString(cur.parent));
+				tmp.addChildren(Integer.parseInt(entryId));
+				index.addEntry(tmp.key, tmp);
+			}
 			
 			crawl_recursive(links, crawled, numPages);
 		}
