@@ -4,11 +4,14 @@ import java.util.Queue;
 import java.util.List;
 import java.util.LinkedList;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 import java.io.IOException;
+
 import project.InvertedIndex;
 
 public class Spider
@@ -44,10 +47,12 @@ public class Spider
 		// TODO: Extract keywords and insert to inverted file (Indexer)
 				
 		print(numPages + "/" + this.pages + " pages remaining. Crawling " + _url + "...");
-				
-		Document doc = Jsoup.connect(_url).get();
+		
+		Connection.Response cr = Jsoup.connect(_url).execute();
+		Document doc = cr.parse();
 		Elements urls = doc.select("a[href]");
 		info.title = doc.title();
+		info.lastModified = cr.header("Last-Modified");
 		
         for (Element a : urls) {
         	String current = a.attr("abs:href");

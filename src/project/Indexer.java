@@ -37,7 +37,7 @@ public class Indexer {
 	
 	public void Index() throws IOException {
 		
-		StringBean sb = new StringBean ();
+		StringBean sb = new StringBean (); // change to Jsoup?
 		Vector<String> v_str = new Vector<String>();
 		//while (pageIndex.getItr()) {
 			boolean links = false;

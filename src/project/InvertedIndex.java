@@ -83,7 +83,7 @@ public class InvertedIndex
 		String key;
 		while((key = (String)iter.next()) != null) {
 			urlInfo info = (urlInfo)hashtable.get(key);
-			System.out.println("#" + key + ": " + info.url + " (" + info.title + ")");
+			System.out.println("#" + key + ": " + info.url + " (" + info.title + ") " + info.lastModified);
 		}
 	}	
 	public int count() throws IOException {
