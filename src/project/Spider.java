@@ -56,70 +56,72 @@ public class Spider
 		if(links.isEmpty() || numPages < 1) return;
 				
 		urlTemp cur = links.remove();
-		int id = -1;
 		
 		String entryId = urlIdIndex.getEntryString(cur.url);
 		
-		if(entryId == null) { // if not crawled
+		if(entryId == null) { // if not crawled yet
 			urlInfo info = new urlInfo(cur.url, cur.parent);
 			
-			id = index.count();
+			entryId = Integer.toString(index.count());
 			print(numPages + "/" + this.pages + " pages remaining. Crawling " + info.url + "...");
 			
-			try {
-				Connection.Response cr = Jsoup.connect(info.url).execute();
-				Document doc = cr.parse();
-				Elements urls = doc.select("a[href]");
-				info.title = doc.title();
-				info.lastModified = cr.header("Last-Modified");
-				info.key = Integer.toString(id);
-				
-				if(cur.parent != -1) {
-					info.addParent(cur.parent);
-					urlInfo tmp = index.getEntry(Integer.toString(cur.parent));
-					tmp.addChildren(id);
-					index.addEntry(tmp.key, tmp);
-				}
-				
-				for (Element a : urls) {
-		        	String current = a.attr("abs:href");
-		        	links.add(new urlTemp(current, id));
-		        }
+			links = extractLinks(links, info, entryId, cur, false); 
 
-				index.addEntry(Integer.toString(id), info);
-				urlIdIndex.addEntry(info.url, Integer.toString(id));
-			}
-			catch(UnsupportedMimeTypeException mte) {
-				System.out.println("UnsupportedMimeTypeException!");
-			}
-			catch(SocketTimeoutException ste) {
-				System.out.println("Timeout"); // TODO: Implement retry?
-			}
-			catch(HttpStatusException hse) {
-				System.out.println("HttpStatusException"); // TODO: Skip
-			}
-			catch(Exception e) {
-				System.out.println("Generic exception");
-			}
 			crawl_recursive(links, crawled, numPages-1);
 			
 		} else {
 			urlInfo entry = index.getEntry(entryId);
 			print("Crawled already! (" + entry.url + " #" + entry.key + ")");
 			
-			// TODO: Check last modified date
+			links = extractLinks(links, entry, entryId, cur, true);
 			
+			crawl_recursive(links, crawled, numPages);
+		}
+	}
+	
+	public Queue<urlTemp> extractLinks(Queue<urlTemp> links, urlInfo info, String entryId, urlTemp cur, boolean crawled) {
+		try {
+			Connection.Response cr = Jsoup.connect(info.url).ignoreContentType(true).execute();
+			Document doc = cr.parse();
+			String previousLastModified = info.lastModified;
+			info.lastModified = cr.header("Last-Modified");
+
+			if(!crawled || (info.lastModified != null && !info.lastModified.equals(previousLastModified))) {
+				Elements urls = doc.select("a[href]");
+				info.title = doc.title();
+				info.key = entryId;
+
+				for (Element a : urls) {
+					String current = a.attr("abs:href");
+					links.add(new urlTemp(current, Integer.parseInt(entryId)));
+		        }
+			}
+
 			if(cur.parent != -1) {
-				entry.addParent(cur.parent);
-				index.addEntry(entry.key, entry);
-				
+				info.addParent(cur.parent);
+
 				urlInfo tmp = index.getEntry(Integer.toString(cur.parent));
 				tmp.addChildren(Integer.parseInt(entryId));
 				index.addEntry(tmp.key, tmp);
 			}
 			
-			crawl_recursive(links, crawled, numPages);
+			index.addEntry(info.key, info);
+			if(!crawled) urlIdIndex.addEntry(info.url, info.key);
 		}
+		catch(UnsupportedMimeTypeException mte) {
+			System.out.println(mte.toString());
+		}
+		catch(SocketTimeoutException ste) {
+			System.out.println(ste.toString()); // TODO: Implement retry?
+		}
+		catch(HttpStatusException hse) {
+			System.out.println(hse.toString()); // TODO: Skip
+		}
+		catch(Exception e) {
+			System.out.println("Generic exception: " + e.toString());
+		}
+		
+		return links;
 	}
 	
 	public InvertedIndex Index() {
@@ -132,15 +134,12 @@ public class Spider
 	
 	public static void main (String[] args) {
 		try {
-			Spider crawler = new Spider("http://www.cse.ust.hk/", 300);
+			Spider crawler = new Spider("http://www.cse.ust.hk/", 100);
 			crawler.crawl();
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace ();
 		}
-//		catch (ParserException pe) {
-//			pe.printStackTrace ();
-//		}
 	}
 }
 	
