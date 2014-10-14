@@ -5,19 +5,32 @@ import jdbm.RecordManagerFactory;
 import jdbm.htree.HTree;
 import jdbm.helper.FastIterator;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Vector;
 import java.io.IOException;
 import java.io.Serializable;
 
 class urlInfo implements Serializable {
+	public String key;
 	public String url;
 	public String title;
 	public int size;
-	public int[] children;
-	public int parent;
+	public List<Integer> parent;
+//	public List<Integer> children;
 	public String lastModified;
 	
-	public urlInfo() {}
+	
+	public urlInfo(String url, int parent) {
+		this.parent = new ArrayList<Integer>();
+		this.addParent(parent);
+		this.url = url;
+	}
+	
+	public void addParent(int id) {
+		if(!parent.contains(id) && id != -1) this.parent.add(id);
+	}
 	
 //	public urlInfo(String url, String title, int size, int[] children, int parent) {
 //		this.url = url;
@@ -71,6 +84,12 @@ public class InvertedIndex
 		hashtable.put(id, newEntry);
 		recman.commit();
 	}
+	public urlInfo getEntry(String key) throws IOException {
+		return (urlInfo)hashtable.get(key);
+	}
+	public String getEntryString(String key) throws IOException {
+		return (String)hashtable.get(key);
+	}
 	public void delEntry(String word) throws IOException
 	{
 		// Delete the word and its list from the hashtable
@@ -83,14 +102,17 @@ public class InvertedIndex
 		String key;
 		while((key = (String)iter.next()) != null) {
 			urlInfo info = (urlInfo)hashtable.get(key);
-			System.out.println("#" + key + ": " + info.url + " (" + info.title + ") " + info.lastModified);
+			System.out.println("\n#" + key + ": " + info.url + " (" + info.title + ") " + info.lastModified);
+			System.out.print("Parent ID(s): ");
+			for(int i = 0; i < info.parent.size(); i++) {
+				System.out.print((info.parent.get(i)) + " ");
+			}
 		}
 	}	
 	public int count() throws IOException {
 		FastIterator iter = hashtable.keys();
 		int count = 0;
-		String key;
-		while((key = (String)iter.next()) != null) {
+		while((String)iter.next() != null) {
 			count++;
 		}
 		return count;
