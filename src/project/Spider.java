@@ -11,22 +11,6 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import project.InvertedIndex;
 
-//import org.htmlparser.beans.LinkBean;
-//import org.htmlparser.beans.StringBean;
-//import org.htmlparser.Node;
-//import org.htmlparser.NodeFilter;
-//import org.htmlparser.Parser;
-//import org.htmlparser.filters.AndFilter;
-//import org.htmlparser.filters.NodeClassFilter;
-//import org.htmlparser.filters.TagNameFilter;
-//import org.htmlparser.tags.HeadingTag;
-//import org.htmlparser.tags.LinkTag;
-//import org.htmlparser.tags.TitleTag;
-//import org.htmlparser.util.NodeList;
-//import org.htmlparser.util.ParserException;
-//import org.htmlparser.util.SimpleNodeIterator;
-//import java.net.URL;
-
 public class Spider
 {
 	private String url;
@@ -47,7 +31,7 @@ public class Spider
 		crawl_recursive(links, crawled, this.pages);
 		
 		index.printAll(); // DEBUG
-		System.out.println("\nComplete! " + pages + " pages crawled in total.");
+		print("\nComplete! " + pages + " pages crawled in total.");
 	}
 	
 	private void crawl_recursive(Queue<String> links, List<String> crawled, int numPages) throws IOException {
@@ -57,43 +41,33 @@ public class Spider
 		urlInfo info = new urlInfo();
 		info.url = _url;
 		
-		crawled.add(_url);
-		
 		// TODO: Extract keywords and insert to inverted file (Indexer)
-		
-		if(!index.exists(_url))
-			index.addEntry(Integer.toString(index.count()), info);
-		
-		System.out.println(numPages + "/" + this.pages + " pages remaining. Crawling " + _url + "...");
+				
+		print(numPages + "/" + this.pages + " pages remaining. Crawling " + _url + "...");
 				
 		Document doc = Jsoup.connect(_url).get();
 		Elements urls = doc.select("a[href]");
+		info.title = doc.title();
 		
         for (Element a : urls) {
         	String current = a.attr("abs:href");
-        	if(!crawled.contains(current) && !urls.contains(current))
+        	if(!crawled.contains(current) && !urls.contains(current) && !_url.equals(current))
         		links.add(current);
         }
-		
-//		LinkBean lb = new LinkBean();
-//		lb.setURL(_url);
-//		URL[] urls = lb.getLinks();
-		
-//		for(int i = 0; i < urls.length; i++) {
-//		String current = urls[i].toString();
-//		if(!crawled.contains(current) && !urls.contains(current))
-//			links.add(current);
-//	}
-		
-//		Parser p = new Parser();
-//		p.main(new String[] {_url,"TITLE"});
-		
-
+				
+        if(!index.exists(_url))
+			index.addEntry(Integer.toString(index.count()), info);
+        
+        crawled.add(_url);
 		crawl_recursive(links, crawled, numPages-1);
 	}
 	
 	public InvertedIndex Index() {
 		return index;
+	}
+	
+	public void print(String s) {
+		System.out.println(s);
 	}
 	
 	public static void main (String[] args) {
