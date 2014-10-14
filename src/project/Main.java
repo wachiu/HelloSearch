@@ -11,7 +11,11 @@ public class Main {
 		indexer.CrawlPages();
 		
 		//index page
-		indexer.Index();
+		try {
+			indexer.Index();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		//import to JDBM
 		indexer.SaveToJDBM();

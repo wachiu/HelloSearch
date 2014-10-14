@@ -9,14 +9,29 @@ import java.util.Vector;
 import java.io.IOException;
 import java.io.Serializable;
 
-class urlInfo {
+class urlInfo implements Serializable {
 	public String url;
-	public int parent;
+	public String title;
+	public int size;
 	public int[] children;
-	public urlInfo(String _url, int _parent, int[] children) {
-		url = _url;
-		parent = _parent;
-		children = children;
+	public int parent;
+	public String lastModified;
+	
+	public urlInfo(String url, String title, int size, int[] children, int parent) {
+		this.url = url;
+		this.title = title;
+		this.size = size;
+		this.children = children;
+		this.parent = parent;	
+	}
+	
+	public urlInfo(String url, String title, int size, int[] children, int parent, String lastModified) {
+		this.url = url;
+		this.title = title;
+		this.size = size;
+		this.children = children;
+		this.parent = parent;
+		this.lastModified = lastModified;
 	}
 }
 
@@ -47,6 +62,10 @@ public class InvertedIndex
 
 	public void addEntry(String id, String newEntry) throws IOException
 	{
+		hashtable.put(id, newEntry);
+		recman.commit();
+	}
+	public void addEntry(String id, urlInfo newEntry) throws IOException {
 		hashtable.put(id, newEntry);
 		recman.commit();
 	}
