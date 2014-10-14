@@ -17,22 +17,24 @@ class urlInfo implements Serializable {
 	public int parent;
 	public String lastModified;
 	
-	public urlInfo(String url, String title, int size, int[] children, int parent) {
-		this.url = url;
-		this.title = title;
-		this.size = size;
-		this.children = children;
-		this.parent = parent;	
-	}
+	public urlInfo() {}
 	
-	public urlInfo(String url, String title, int size, int[] children, int parent, String lastModified) {
-		this.url = url;
-		this.title = title;
-		this.size = size;
-		this.children = children;
-		this.parent = parent;
-		this.lastModified = lastModified;
-	}
+//	public urlInfo(String url, String title, int size, int[] children, int parent) {
+//		this.url = url;
+//		this.title = title;
+//		this.size = size;
+//		this.children = children;
+//		this.parent = parent;	
+//	}
+//	
+//	public urlInfo(String url, String title, int size, int[] children, int parent, String lastModified) {
+//		this.url = url;
+//		this.title = title;
+//		this.size = size;
+//		this.children = children;
+//		this.parent = parent;
+//		this.lastModified = lastModified;
+//	}
 }
 
 public class InvertedIndex
@@ -80,7 +82,8 @@ public class InvertedIndex
 		FastIterator iter = hashtable.keys();
 		String key;
 		while((key = (String)iter.next()) != null) {
-			System.out.println(key+" = "+hashtable.get(key));
+			urlInfo info = (urlInfo)hashtable.get(key);
+			System.out.println(key+" = "+ info.url + " (" + info + ")");
 		}
 	}	
 	public int count() throws IOException {
@@ -94,9 +97,9 @@ public class InvertedIndex
 	}
 	public boolean exists(String _url) throws IOException {
 		FastIterator iter = hashtable.values();
-		String value;
-		while((value = (String)iter.next()) != null) {
-			if(value.equals(_url)) return true;
+		urlInfo info;
+		while((info = (urlInfo)iter.next()) != null) {
+			if(info.url.equals(_url)) return true;
 		}
 		return false;
 	}

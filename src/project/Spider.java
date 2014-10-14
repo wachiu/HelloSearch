@@ -37,7 +37,7 @@ public class Spider
 		
 		crawl_recursive(links, crawled, this.pages);
 		
-//		index.printAll(); // DEBUG
+		index.printAll(); // DEBUG
 		System.out.println("\nComplete! " + pages + " pages crawled in total.");
 	}
 	
@@ -45,12 +45,15 @@ public class Spider
 		if(links.isEmpty() || numPages < 1) return;
 		
 		String _url = links.remove();
+		urlInfo info = new urlInfo();
+		info.url = _url;
+		
 		crawled.add(_url);
 		
 		// TODO: Extract keywords and insert to inverted file (Indexer)
 		
 		if(!index.exists(_url))
-			index.addEntry(Integer.toString(index.count()), _url);
+			index.addEntry(Integer.toString(index.count()), info);
 		
 		System.out.println(numPages + "/" + this.pages + " pages remaining. Crawling " + _url + "...");
 		
