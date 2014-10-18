@@ -42,7 +42,7 @@ public class StopStem {
 	{
 		return porter.stripAffixes(str);
 	}
-	public static void main(String[] arg)
+	/*public static void main(String[] arg)
 	{
 		StopStem stopStem = new StopStem("stopwords.txt");
 		String input="";
@@ -66,5 +66,5 @@ public class StopStem {
 		{
 			System.err.println(ioe.toString());
 		}
-	}
+	}*/
 }

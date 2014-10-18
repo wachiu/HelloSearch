@@ -31,14 +31,16 @@ public class Spider
 {
 	private String url;
 	private int pages;
+	private Indexer indexer;
 	private InvertedIndex index;
 	private InvertedIndex urlIdIndex;
 	
-	Spider(String _url, int _pages) throws IOException {
+	Spider(String _url, int _pages, Indexer indexer) throws IOException {
 		url = _url;
 		pages = _pages;
 		index = new InvertedIndex("idUrl","ht1");
 		urlIdIndex = new InvertedIndex("urlId","ht1");
+		this.indexer = indexer;
 	}
 	
 	public void crawl() throws IOException {
@@ -85,7 +87,7 @@ public class Spider
 			Document doc = cr.parse();
 			String previousLastModified = info.lastModified;
 			info.lastModified = cr.header("Last-Modified");
-
+			
 			if(!crawled || (info.lastModified != null && !info.lastModified.equals(previousLastModified))) {
 				Elements urls = doc.select("a[href]");
 				info.title = doc.title();
@@ -106,7 +108,11 @@ public class Spider
 			}
 			
 			index.addEntry(info.key, info);
-			if(!crawled) urlIdIndex.addEntry(info.url, info.key);
+			if(!crawled) {
+				urlIdIndex.addEntry(info.url, info.key);
+				indexer.IndexPage(entryId, doc.body().toString());
+			}
+			
 		}
 		catch(UnsupportedMimeTypeException mte) {
 			System.out.println(mte.toString());
@@ -124,15 +130,20 @@ public class Spider
 		return links;
 	}
 	
-	public InvertedIndex Index() {
-		return index;
-	}
-	
 	public void print(String s) {
 		System.out.println(s);
 	}
 	
-	public static void main (String[] args) {
+	public void finalize() {
+		try {
+			index.finalize();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/*public static void main (String[] args) {
 		try {
 			Spider crawler = new Spider("http://www.cse.ust.hk/", 100);
 			crawler.crawl();
@@ -140,6 +151,6 @@ public class Spider
 		catch (IOException ioe) {
 			ioe.printStackTrace ();
 		}
-	}
+	}*/
 }
 	

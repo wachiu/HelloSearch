@@ -1,64 +1,127 @@
 package project;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.htmlparser.beans.StringBean;
 
+class Word implements Serializable {
+
+	private String word;
+	private LinkedList<Posting> lists;
+	
+	
+	public Word(String word) {
+		this.word = word;
+		this.lists = new LinkedList<Posting>();
+	}
+	
+	public void addPosting(String documentId, int position) {
+		Posting p = listContains(documentId);
+		if(p == null) { // if posting not exists, create one
+			p = new Posting(documentId);
+			lists.addLast(p);
+		}
+		p.addPosition(position);
+		
+		/*System.out.println("--" + this.word + "--");
+		for(Posting tmp : lists) {
+			System.out.println(tmp.getDocumentId() + ": " + tmp.getPositions());
+		}*/
+	}
+	
+	private Posting listContains(String documentId) {
+		for(Posting tmp : lists) {
+			if(tmp.getDocumentId().equals(documentId)) return tmp; 
+		}
+		return null;
+	}
+}
+
+class Posting implements Serializable {
+	private String documentId;
+	private LinkedList<Integer> positions;
+	
+	public Posting(String documentId) {
+		this.documentId = documentId;
+		this.positions = new LinkedList<Integer>();
+	}
+	
+	public void addPosition(int position) {
+		positions.addLast(position);
+	}
+	
+	public String getDocumentId() {
+		return documentId;
+	}
+	
+	public String getPositions() {
+		String p = "";
+		for(int i : this.positions) {
+			p += i + ", ";
+		}
+		return p;
+	}
+	
+}
+
 public class Indexer {
 
-	private Spider spider;
 	private StopStem stopStem;
 	private InvertedIndex pageIndex;
 	private InvertedIndex wordIndex;
+	private int wordId;
 	
 	public Indexer() {
-		
+		wordId = 0;
 		try {
-			spider = new Spider("http://www.cse.ust.hk/", 30);
 			stopStem = new StopStem("stopwords.txt");
-			pageIndex = spider.Index();
-			wordIndex = new InvertedIndex("idWord", "word");
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace ();
-		}
-	}
-
-	public void CrawlPages() {
-		try {
-			spider.crawl();
+			wordIndex = new InvertedIndex("idWord", "ht1");
+			pageIndex = new InvertedIndex("idPage", "ht1");
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace ();
 		}
 	}
 	
-	public void Index() throws IOException {
+	public void IndexPage(String id, String body) {
+		body = body.replaceAll("<[^>]*>", "");	//remove all tags
+		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
 		
-		StringBean sb = new StringBean (); // change to Jsoup?
-		Vector<String> v_str = new Vector<String>();
-		//while (pageIndex.getItr()) {
-			boolean links = false;
-			sb.setLinks (links);
-			//sb.setURL (url);
-			String temp = sb.getStrings();
-			String temp2 = "";
-			int wordCount = 0;
-			StringTokenizer st = new StringTokenizer(temp, "\n");
-			while(st.hasMoreTokens()){
-				temp2 = st.nextToken();
-				if(!v_str.contains(temp2)) {
-					v_str.add(temp2);
-					wordIndex.addEntry(++wordCount + "", temp2);
+		int position = 0;
+		while(m.find()) {
+		    String text = m.group(1);
+		    if(stopStem.isStopWord(text)) continue;
+		    else text = stopStem.stem(text);
+		    
+		    try {
+		    	Word w;
+				if(!wordIndex.exists(text)) {
+					w = new Word(text);
+					wordIndex.addEntry(text, "" + (++wordId));
+					pageIndex.addEntry("" + wordId, w);
 				}
-	        }
-		//}
+				else {
+					w = (Word)pageIndex.getEntryObject(
+							(String)wordIndex.getEntryObject(text)
+						);
+				}
+				w.addPosting(id, ++position);
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    //System.out.println(id + ":" + text);
+		}
 	}
 	
-	public void SaveToJDBM() {
-		
+	public void finalize() {
 		try {
 			pageIndex.finalize();
 			wordIndex.finalize();

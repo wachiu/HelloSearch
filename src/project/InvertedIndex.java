@@ -78,22 +78,24 @@ public class InvertedIndex
 		recman.commit();
 		recman.close();		
 	}
-
-	public void addEntry(String id, String newEntry) throws IOException
-	{
+	
+	public void addEntry(String id, Object newEntry) throws IOException {
 		hashtable.put(id, newEntry);
 		recman.commit();
 	}
-	public void addEntry(String id, urlInfo newEntry) throws IOException {
-		hashtable.put(id, newEntry);
-		recman.commit();
-	}
+	
 	public urlInfo getEntry(String key) throws IOException {
 		return (urlInfo)hashtable.get(key);
 	}
+	
 	public String getEntryString(String key) throws IOException {
 		return (String)hashtable.get(key);
 	}
+	
+	public Object getEntryObject(String key) throws IOException {
+		return hashtable.get(key);
+	}
+	
 	public void delEntry(String word) throws IOException
 	{
 		// Delete the word and its list from the hashtable
@@ -127,12 +129,13 @@ public class InvertedIndex
 		return count;
 	}
 	public boolean exists(String _url) throws IOException {
-		FastIterator iter = hashtable.values();
+		return hashtable.get(_url) != null;
+		/*FastIterator iter = hashtable.values();
 		urlInfo info;
 		while((info = (urlInfo)iter.next()) != null) {
 			if(info.url.equals(_url)) return true;
 		}
-		return false;
+		return false;*/
 	}
 //	public static void main(String[] args)
 //	{
