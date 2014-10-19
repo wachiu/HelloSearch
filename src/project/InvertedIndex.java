@@ -81,7 +81,7 @@ public class InvertedIndex
 	
 	public void addEntry(String id, Object newEntry) throws IOException {
 		hashtable.put(id, newEntry);
-		recman.commit();
+//		recman.commit();
 	}
 	
 	public urlInfo getEntry(String key) throws IOException {
