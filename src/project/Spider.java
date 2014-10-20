@@ -133,7 +133,7 @@ public class Spider
 
 		int previousSize = info.size;
 		String tmpSize = cr.header("Content-Length");
-		if(tmpSize == null) info.size = doc.body().toString().length();
+		if(tmpSize == null) info.size = cr.bodyAsBytes().length;
 		else info.size = Integer.parseInt(tmpSize);
 		
 		boolean update = (previousLastModified != null
