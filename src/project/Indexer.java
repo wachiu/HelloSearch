@@ -8,6 +8,9 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jdbm.helper.FastIterator;
+import jdbm.htree.HTree;
+
 import org.htmlparser.beans.StringBean;
 
 class Word implements Serializable {
@@ -33,6 +36,18 @@ class Word implements Serializable {
 		for(Posting tmp : lists) {
 			System.out.println(tmp.getDocumentId() + ": " + tmp.getPositions());
 		}*/
+	}
+	
+	public void removePosting(String id) {
+		LinkedList<Posting> new_lists = new LinkedList<Posting>();
+		
+		for(Posting tmp : lists) {
+			if(!tmp.getDocumentId().equals(id)) {
+				new_lists.add(tmp);
+			}
+		}
+		
+		lists = new_lists;
 	}
 	
 	private Posting listContains(String documentId) {
@@ -81,8 +96,8 @@ public class Indexer {
 		wordId = 0;
 		try {
 			stopStem = new StopStem("stopwords.txt");
-			wordIndex = new InvertedIndex("idWord", "ht1");
-			pageIndex = new InvertedIndex("idPage", "ht1");
+			wordIndex = new InvertedIndex("WidWord", "ht1");
+			pageIndex = new InvertedIndex("WordWid", "ht1");
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace ();
@@ -90,7 +105,7 @@ public class Indexer {
 	}
 	
 	public void IndexPage(String id, String body) {
-		body = body.replaceAll("<[^>]*>", "");	//remove all tags
+		//body = body.replaceAll("<[^>]*>", "");	//remove all tags
 		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
 		
 		int position = 0;
@@ -119,6 +134,15 @@ public class Indexer {
 			}
 		    //System.out.println(id + ":" + text);
 		}
+	}
+	
+	public void UpdateIndex(String id, String body) {
+		FastIterator iter = wordIndex.getIterator();
+		Word p;
+		while((p = (Word)iter.next()) != null) {
+			p.removePosting(id);
+		}
+		IndexPage(id, body);
 	}
 	
 	public void finalize() {

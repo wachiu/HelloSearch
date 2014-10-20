@@ -81,6 +81,16 @@ public class InvertedIndex
 	public boolean exists(String _url) throws IOException {
 		return hashtable.get(_url) != null;
 	}
+	
+	public FastIterator getIterator() {
+		try {
+			return hashtable.keys();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 //	public static void main(String[] args)
 //	{
 //		try
