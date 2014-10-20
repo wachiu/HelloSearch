@@ -88,25 +88,29 @@ class Posting implements Serializable {
 public class Indexer {
 
 	private StopStem stopStem;
-	private InvertedIndex pageIndex;
-	private InvertedIndex wordIndex;
-	private int wordId;
+	private InvertedIndex bodyIndex;
+	private InvertedIndex titleIndex;;
+	private int bodywordId;
+	private int titlewordId;
 	
 	public Indexer() {
-		wordId = 0;
+		bodywordId = 0;
+		titlewordId = 0;
 		try {
 			stopStem = new StopStem("stopwords.txt");
-			wordIndex = new InvertedIndex("WidWord", "ht1");
-			pageIndex = new InvertedIndex("WordWid", "ht1");
+			bodyIndex = new InvertedIndex("bodyId", "ht1");
+			titleIndex = new InvertedIndex("titleId", "ht1");
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace ();
 		}
 	}
 	
-	public void IndexPage(String id, String body) {
+	public void IndexPage(String id, String title, String body) {
 		//body = body.replaceAll("<[^>]*>", "");	//remove all tags
-		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
+		
+		//index title first
+		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(title);
 		
 		int position = 0;
 		while(m.find()) {
@@ -116,15 +120,41 @@ public class Indexer {
 		    
 		    try {
 		    	Word w;
-				if(!wordIndex.exists(text)) {
+				if(!titleIndex.exists(text)) {
 					w = new Word(text);
-					wordIndex.addEntry(text, "" + (++wordId));
-					pageIndex.addEntry("" + wordId, w);
+					titleIndex.addEntry(text, "" + (++titlewordId));
+					//pageIndex.addEntry("" + wordId, w);
 				}
 				else {
-					w = (Word)pageIndex.getEntryObject(
-							(String)wordIndex.getEntryObject(text)
-						);
+					w = (Word)titleIndex.getEntryObject(text);
+				}
+				w.addPosting(id, ++position);
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    //System.out.println(id + ":" + text);
+		}
+		
+		//then index body
+		m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
+		
+		position = 0;
+		while(m.find()) {
+		    String text = m.group(1);
+		    if(stopStem.isStopWord(text)) continue;
+		    else text = stopStem.stem(text);
+		    
+		    try {
+		    	Word w;
+				if(!bodyIndex.exists(text)) {
+					w = new Word(text);
+					bodyIndex.addEntry(text, "" + (++bodywordId));
+					//pageIndex.addEntry("" + wordId, w);
+				}
+				else {
+					w = (Word)bodyIndex.getEntryObject(text);
 				}
 				w.addPosting(id, ++position);
 				
@@ -136,19 +166,25 @@ public class Indexer {
 		}
 	}
 	
-	public void UpdateIndex(String id, String body) {
-		FastIterator iter = wordIndex.getIterator();
+	public void UpdateIndex(String id, String title, String body) {
+		FastIterator iter = titleIndex.getIterator();
 		Word p;
 		while((p = (Word)iter.next()) != null) {
 			p.removePosting(id);
 		}
-		IndexPage(id, body);
+		
+		iter = bodyIndex.getIterator();
+		while((p = (Word)iter.next()) != null) {
+			p.removePosting(id);
+		}
+		
+		IndexPage(id, title, body);
 	}
 	
 	public void finalize() {
 		try {
-			pageIndex.finalize();
-			wordIndex.finalize();
+			bodyIndex.finalize();
+			titleIndex.finalize();
 		}
 		catch(IOException ioe) {
 			ioe.printStackTrace();
