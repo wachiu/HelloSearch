@@ -12,48 +12,6 @@ import java.util.Vector;
 import java.io.IOException;
 import java.io.Serializable;
 
-class urlInfo implements Serializable {
-	public String key;
-	public String url;
-	public String title;
-	public int size;
-	public List<Integer> parent;
-	public List<Integer> children;
-	public String lastModified;
-	
-	
-	public urlInfo(String url, int parent) {
-		this.parent = new ArrayList<Integer>();
-		this.children = new ArrayList<Integer>();
-		this.addParent(parent);
-		this.url = url;
-	}
-	
-	public void addParent(int id) {
-		if(!parent.contains(id) && id != -1) this.parent.add(id);
-	}
-	public void addChildren(int id) {
-		if(!children.contains(id) && id != -1) this.children.add(id);
-	}
-	
-//	public urlInfo(String url, String title, int size, int[] children, int parent) {
-//		this.url = url;
-//		this.title = title;
-//		this.size = size;
-//		this.children = children;
-//		this.parent = parent;	
-//	}
-//	
-//	public urlInfo(String url, String title, int size, int[] children, int parent, String lastModified) {
-//		this.url = url;
-//		this.title = title;
-//		this.size = size;
-//		this.children = children;
-//		this.parent = parent;
-//		this.lastModified = lastModified;
-//	}
-}
-
 public class InvertedIndex
 {
 	private RecordManager recman;
@@ -83,15 +41,7 @@ public class InvertedIndex
 		hashtable.put(id, newEntry);
 //		recman.commit();
 	}
-	
-	public urlInfo getEntry(String key) throws IOException {
-		return (urlInfo)hashtable.get(key);
-	}
-	
-	public String getEntryString(String key) throws IOException {
-		return (String)hashtable.get(key);
-	}
-	
+
 	public Object getEntryObject(String key) throws IOException {
 		return hashtable.get(key);
 	}
@@ -108,7 +58,7 @@ public class InvertedIndex
 		String key;
 		while((key = (String)iter.next()) != null) {
 			urlInfo info = (urlInfo)hashtable.get(key);
-			System.out.println("\n#" + key + ": " + info.url + " (" + info.title + ") " + info.lastModified);
+			System.out.println("\n#" + key + ": " + info.url + " (" + info.title + ") " + info.lastModified + " " + info.size);
 			System.out.print("Parent ID(s): ");
 			for(int i = 0; i < info.parent.size(); i++) {
 				System.out.print((info.parent.get(i)) + " ");
@@ -130,12 +80,6 @@ public class InvertedIndex
 	}
 	public boolean exists(String _url) throws IOException {
 		return hashtable.get(_url) != null;
-		/*FastIterator iter = hashtable.values();
-		urlInfo info;
-		while((info = (urlInfo)iter.next()) != null) {
-			if(info.url.equals(_url)) return true;
-		}
-		return false;*/
 	}
 //	public static void main(String[] args)
 //	{
