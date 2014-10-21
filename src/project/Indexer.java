@@ -146,7 +146,6 @@ public class Indexer {
 		    String text = m.group(1);
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
-		    ss.add(text);
 		    
 		    try {
 		    	Word w;
@@ -155,12 +154,14 @@ public class Indexer {
 					w.addPosting(id, ++position);
 					titleIdIndex.addEntry(text, "" + (++titlewordId));
 					idTitleIndex.addEntry("" + titlewordId, w);
+					ss.add("" + titlewordId);
 				}
 				else {
 					objid = (String)titleIdIndex.getEntryObject(text);
 					w = (Word)idTitleIndex.getEntryObject(objid);
 					w.addPosting(id, ++position);
 					idTitleIndex.addEntry(objid, w);
+					ss.add(objid);
 				}
 				
 			} catch (IOException e) {
@@ -189,7 +190,6 @@ public class Indexer {
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
 		    if(text.equals("")) continue;
-		    ss.add(text);
 		    
 		    try {
 		    	Word w;
@@ -198,12 +198,14 @@ public class Indexer {
 					w.addPosting(id, ++position);
 					bodyIdIndex.addEntry(text, "" + (++bodywordId));
 					idBodyIndex.addEntry("" + bodywordId, w);
+					ss.add("" + titlewordId);
 				}
 				else {
 					objid = (String)bodyIdIndex.getEntryObject(text);
 					w = (Word)idBodyIndex.getEntryObject(objid);
 					w.addPosting(id, ++position);
 					idBodyIndex.addEntry(objid, w);
+					ss.add(objid);
 				}
 				
 			} catch (IOException e) {
