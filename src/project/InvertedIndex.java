@@ -16,10 +16,12 @@ public class InvertedIndex
 {
 	private RecordManager recman;
 	private HTree hashtable;
+	private int counter;
 
 	public InvertedIndex(String recordmanager, String objectname) throws IOException
 	{
 		recman = RecordManagerFactory.createRecordManager(recordmanager);
+		counter = 0;
 		long recid = recman.getNamedObject(objectname);
 			
 		if (recid != 0)
@@ -38,6 +40,10 @@ public class InvertedIndex
 	}
 	
 	public void addEntry(String id, Object newEntry) throws IOException {
+		if(++counter > 10000) {
+			counter = 0;
+			recman.commit();
+		}
 		hashtable.put(id, newEntry);
 //		recman.commit();
 	}
@@ -50,7 +56,17 @@ public class InvertedIndex
 	{
 		// Delete the word and its list from the hashtable
 		hashtable.remove(word);
-	} 
+	}
+	
+	public void delEntryObject(Object obj) {
+		try {
+			hashtable.remove(obj);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void printAll() throws IOException
 	{
 		// Print all the data in the hashtable
@@ -82,9 +98,19 @@ public class InvertedIndex
 		return hashtable.get(_url) != null;
 	}
 	
-	public FastIterator getIterator() {
+	public FastIterator getIteratorKeys() {
 		try {
 			return hashtable.keys();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public FastIterator getIteratorVals() {
+		try {
+			return hashtable.values();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
