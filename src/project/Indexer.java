@@ -196,15 +196,29 @@ public class Indexer {
 	}
 	
 	public void UpdateIndex(String id, String title, String body) {
-		FastIterator iter = idTitleIndex.getIteratorKeys();
+		//title: remove all entry from the word
+		FastIterator iter = idTitleIndex.getIteratorVals();
 		Word p;
 		while((p = (Word)iter.next()) != null) {
 			p.removePosting(id);
+			try {
+				idTitleIndex.addEntry((String)titleIdIndex.getEntryObject(p.getWord()), p);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
-		iter = idBodyIndex.getIteratorKeys();
+		//body: remove all entry from the word
+		iter = idBodyIndex.getIteratorVals();
 		while((p = (Word)iter.next()) != null) {
 			p.removePosting(id);
+			try {
+				idBodyIndex.addEntry((String)bodyIdIndex.getEntryObject(p.getWord()), p);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		IndexPage(id, title, body);
