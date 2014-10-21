@@ -164,7 +164,8 @@ public class Spider
 		index.addEntry(info.key, info);
 		if(!crawled) {
 			urlIdIndex.addEntry(info.url, info.key);
-			indexer.IndexPage(entryId, doc.title(), doc.body().toString());
+			indexer.IndexTitle(entryId, doc.title());
+			indexer.IndexBody(entryId, doc.body().toString());
 		}
 				
 		return links;

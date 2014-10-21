@@ -2,6 +2,7 @@ package project;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -60,6 +61,13 @@ class Word implements Serializable {
 	
 	public int df() {
 		return lists.size();
+	}
+	
+	public int freq(String id) {
+		for(Posting tmp :lists) {
+			if(tmp.getDocumentId().equals(id)) return tmp.tf();
+		}
+		return 0;
 	}
 	
 	private Posting listContains(String documentId) {
@@ -126,8 +134,8 @@ public class Indexer {
 		}
 	}
 	
-	public void IndexPage(String id, String title, String body) {
-		body = body.replaceAll("<[^>]*>", "");	//remove all tags
+	public LinkedHashSet<String> IndexTitle(String id, String title) {
+		LinkedHashSet<String> ss = new LinkedHashSet<String>();
 		
 		//index title first
 		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(title);
@@ -138,6 +146,7 @@ public class Indexer {
 		    String text = m.group(1);
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
+		    ss.add(text);
 		    
 		    try {
 		    	Word w;
@@ -161,16 +170,26 @@ public class Indexer {
 		    //System.out.println(id + ":" + text);
 		}
 		
-		//then index body
-		m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
+		return ss;
+	}
+	
+	public LinkedHashSet<String> IndexBody(String id, String body) {
+		LinkedHashSet<String> ss = new LinkedHashSet<String>();
+
+		body = body.replaceAll("<[^>]*>", "");	//remove all tags
 		
-		position = 0;
+		//then index body
+		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
+		String objid = "";
+		
+		int position = 0;
 		while(m.find()) {
 		    String text = m.group(1);
 		    
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
 		    if(text.equals("")) continue;
+		    ss.add(text);
 		    
 		    try {
 		    	Word w;
@@ -193,9 +212,11 @@ public class Indexer {
 			}
 		    //System.out.println(id + ":" + text);
 		}
+		
+		return ss;
 	}
 	
-	public void UpdateIndex(String id, String title, String body) {
+	public LinkedHashSet<String> UpdateIndexTitle(String id, String title) {
 		//title: remove all entry from the word
 		FastIterator iter = idTitleIndex.getIteratorVals();
 		Word p;
@@ -209,8 +230,14 @@ public class Indexer {
 			}
 		}
 		
+		return IndexTitle(id, title);
+	}
+	
+	public LinkedHashSet<String> UpdateIndexBody(String id, String body) {
+		
 		//body: remove all entry from the word
-		iter = idBodyIndex.getIteratorVals();
+		FastIterator iter = idBodyIndex.getIteratorVals();
+		Word p;
 		while((p = (Word)iter.next()) != null) {
 			p.removePosting(id);
 			try {
@@ -221,7 +248,7 @@ public class Indexer {
 			}
 		}
 		
-		IndexPage(id, title, body);
+		return IndexBody(id, body);
 	}
 	
 	public void finalize() {
