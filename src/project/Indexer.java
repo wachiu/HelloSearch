@@ -88,8 +88,10 @@ class Posting implements Serializable {
 public class Indexer {
 
 	private StopStem stopStem;
-	private InvertedIndex bodyIndex;
-	private InvertedIndex titleIndex;;
+	private InvertedIndex bodyIdIndex;
+	private InvertedIndex titleIdIndex;
+	private InvertedIndex idBodyIndex;
+	private InvertedIndex idTitleIndex;
 	private int bodywordId;
 	private int titlewordId;
 	
@@ -98,8 +100,10 @@ public class Indexer {
 		titlewordId = 0;
 		try {
 			stopStem = new StopStem("stopwords.txt");
-			bodyIndex = new InvertedIndex("bodyId", "ht1");
-			titleIndex = new InvertedIndex("titleId", "ht1");
+			bodyIdIndex = new InvertedIndex("bodyId", "ht1");
+			titleIdIndex = new InvertedIndex("titleId", "ht1");
+			idBodyIndex = new InvertedIndex("idBody", "ht1");
+			idTitleIndex = new InvertedIndex("idTitle", "ht1");
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace ();
@@ -120,13 +124,14 @@ public class Indexer {
 		    
 		    try {
 		    	Word w;
-				if(!titleIndex.exists(text)) {
+				if(!titleIdIndex.exists(text)) {
 					w = new Word(text);
-					titleIndex.addEntry(text, "" + (++titlewordId));
-					//pageIndex.addEntry("" + wordId, w);
+					titleIdIndex.addEntry(text, "" + (++titlewordId));
+					idTitleIndex.addEntry("" + titlewordId, w);
 				}
 				else {
-					w = (Word)titleIndex.getEntryObject(text);
+					w = (Word)idTitleIndex.getEntryObject(
+							(String)titleIdIndex.getEntryObject(text));
 				}
 				w.addPosting(id, ++position);
 				
@@ -148,13 +153,14 @@ public class Indexer {
 		    
 		    try {
 		    	Word w;
-				if(!bodyIndex.exists(text)) {
+				if(!bodyIdIndex.exists(text)) {
 					w = new Word(text);
-					bodyIndex.addEntry(text, "" + (++bodywordId));
-					//pageIndex.addEntry("" + wordId, w);
+					bodyIdIndex.addEntry(text, "" + (++bodywordId));
+					idBodyIndex.addEntry("" + bodywordId, w);
 				}
 				else {
-					w = (Word)bodyIndex.getEntryObject(text);
+					w = (Word)idBodyIndex.getEntryObject(
+							(String)bodyIdIndex.getEntryObject(text));
 				}
 				w.addPosting(id, ++position);
 				
@@ -167,13 +173,13 @@ public class Indexer {
 	}
 	
 	public void UpdateIndex(String id, String title, String body) {
-		FastIterator iter = titleIndex.getIterator();
+		FastIterator iter = idTitleIndex.getIterator();
 		Word p;
 		while((p = (Word)iter.next()) != null) {
 			p.removePosting(id);
 		}
 		
-		iter = bodyIndex.getIterator();
+		iter = idBodyIndex.getIterator();
 		while((p = (Word)iter.next()) != null) {
 			p.removePosting(id);
 		}
@@ -183,8 +189,10 @@ public class Indexer {
 	
 	public void finalize() {
 		try {
-			bodyIndex.finalize();
-			titleIndex.finalize();
+			bodyIdIndex.finalize();
+			titleIdIndex.finalize();
+			idBodyIndex.finalize();
+			idTitleIndex.finalize();
 		}
 		catch(IOException ioe) {
 			ioe.printStackTrace();
