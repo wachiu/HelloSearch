@@ -50,6 +50,18 @@ class Word implements Serializable {
 		lists = new_lists;
 	}
 	
+	public String getWord() {
+		return this.word;
+	}
+	
+	public LinkedList<Posting> getPosting() {
+		return this.lists;
+	}
+	
+	public int df() {
+		return lists.size();
+	}
+	
 	private Posting listContains(String documentId) {
 		for(Posting tmp : lists) {
 			if(tmp.getDocumentId().equals(documentId)) return tmp; 
@@ -83,6 +95,10 @@ class Posting implements Serializable {
 		return p;
 	}
 	
+	public int tf() {
+		return positions.size();
+	}
+	
 }
 
 public class Indexer {
@@ -111,10 +127,11 @@ public class Indexer {
 	}
 	
 	public void IndexPage(String id, String title, String body) {
-		//body = body.replaceAll("<[^>]*>", "");	//remove all tags
+		body = body.replaceAll("<[^>]*>", "");	//remove all tags
 		
 		//index title first
 		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(title);
+		String objid = "";
 		
 		int position = 0;
 		while(m.find()) {
@@ -126,14 +143,16 @@ public class Indexer {
 		    	Word w;
 				if(!titleIdIndex.exists(text)) {
 					w = new Word(text);
+					w.addPosting(id, ++position);
 					titleIdIndex.addEntry(text, "" + (++titlewordId));
 					idTitleIndex.addEntry("" + titlewordId, w);
 				}
 				else {
-					w = (Word)idTitleIndex.getEntryObject(
-							(String)titleIdIndex.getEntryObject(text));
+					objid = (String)titleIdIndex.getEntryObject(text);
+					w = (Word)idTitleIndex.getEntryObject(objid);
+					w.addPosting(id, ++position);
+					idTitleIndex.addEntry(objid, w);
 				}
-				w.addPosting(id, ++position);
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -148,21 +167,25 @@ public class Indexer {
 		position = 0;
 		while(m.find()) {
 		    String text = m.group(1);
+		    
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
+		    if(text.equals("")) continue;
 		    
 		    try {
 		    	Word w;
 				if(!bodyIdIndex.exists(text)) {
 					w = new Word(text);
+					w.addPosting(id, ++position);
 					bodyIdIndex.addEntry(text, "" + (++bodywordId));
 					idBodyIndex.addEntry("" + bodywordId, w);
 				}
 				else {
-					w = (Word)idBodyIndex.getEntryObject(
-							(String)bodyIdIndex.getEntryObject(text));
+					objid = (String)bodyIdIndex.getEntryObject(text);
+					w = (Word)idBodyIndex.getEntryObject(objid);
+					w.addPosting(id, ++position);
+					idBodyIndex.addEntry(objid, w);
 				}
-				w.addPosting(id, ++position);
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -173,13 +196,13 @@ public class Indexer {
 	}
 	
 	public void UpdateIndex(String id, String title, String body) {
-		FastIterator iter = idTitleIndex.getIterator();
+		FastIterator iter = idTitleIndex.getIteratorKeys();
 		Word p;
 		while((p = (Word)iter.next()) != null) {
 			p.removePosting(id);
 		}
 		
-		iter = idBodyIndex.getIterator();
+		iter = idBodyIndex.getIteratorKeys();
 		while((p = (Word)iter.next()) != null) {
 			p.removePosting(id);
 		}
