@@ -1,6 +1,7 @@
 package project;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Queue;
 import java.util.List;
 import java.util.LinkedList;
@@ -37,7 +38,8 @@ class urlInfo implements Serializable {
 	public List<Integer> children;
 	public String lastModified;
 	public int size;
-	
+	public LinkedHashSet<String> titleWordIds;
+	public LinkedHashSet<String> bodyWordIds;
 	
 	public urlInfo(String url, int parent) {
 		this.parent = new ArrayList<Integer>();
@@ -164,8 +166,14 @@ public class Spider
 		index.addEntry(info.key, info);
 		if(!crawled) {
 			urlIdIndex.addEntry(info.url, info.key);
-			indexer.IndexTitle(entryId, doc.title());
-			indexer.IndexBody(entryId, doc.body().toString());
+			LinkedHashSet<String> titleWordIds = indexer.IndexTitle(entryId, doc.title());
+			LinkedHashSet<String> bodyWordIds = indexer.IndexBody(entryId, doc.body().toString());
+			
+			urlInfo tmp = (urlInfo)index.getEntryObject(entryId);
+			tmp.titleWordIds = titleWordIds;
+			tmp.bodyWordIds = bodyWordIds;
+			index.addEntry(entryId, tmp);
+			
 		}
 				
 		return links;
