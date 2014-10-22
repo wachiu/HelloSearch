@@ -1,8 +1,10 @@
 package project;
 
-import jdbm.RecordManager;
-import jdbm.RecordManagerFactory;
+//import jdbm.RecordManager;
+//import jdbm.RecordManagerFactory;
 import jdbm.helper.FastIterator;
+
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -13,15 +15,15 @@ public class testProgram {
 	{
 		InvertedIndex urlIdInfo = new InvertedIndex("idUrl", "ht1");
 		//InvertedIndex urlID = new InvertedIndex("urlId","ht1");
-		InvertedIndex bodyID = new InvertedIndex("bodyId", "ht1");
-		InvertedIndex titleIdIndex = new InvertedIndex("titleId", "ht1");
+		//InvertedIndex bodyID = new InvertedIndex("bodyId", "ht1");
+		//InvertedIndex titleIdIndex = new InvertedIndex("titleId", "ht1");
 		InvertedIndex idBodyIndex = new InvertedIndex("idBody", "ht1");
 		InvertedIndex idTitleIndex = new InvertedIndex("idTitle", "ht1");
 		//InvertedIndex url2IDs = new InvertedIndex("url2IDs", "ht1");
 		FastIterator cur = urlIdInfo.getIteratorKeys();
-		PrintWriter writer = new PrintWriter("spider_result.txt", "UTF-8");
+		PrintWriter writer = new PrintWriter(new FileWriter("spider_result.txt"));
 		String key = null;
-		String key1 = null;
+		//String key1 = null;
 		String url = null;
 		while((key = (String)cur.next()) != null)
 		{
@@ -35,7 +37,7 @@ public class testProgram {
 			{
 				writer.print(temp);
 				writer.print(" ");
-				writer.print(((Posting)idTitleIndex.getEntryObject(temp)).tf());
+				writer.print(((Word)idTitleIndex.getEntryObject(temp)).freq(key));
 				writer.print(";");
 			}
 			writer.println();
@@ -43,7 +45,7 @@ public class testProgram {
 			{
 				writer.print(temp);
 				writer.print(" ");
-				writer.print(((Word)idTitleIndex.getEntryObject(temp)).freq(url));
+				writer.print(((Word)idBodyIndex.getEntryObject(temp)).freq(key));
 				writer.print(";");
 			}
 			writer.println();
