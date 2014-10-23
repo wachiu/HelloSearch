@@ -30,23 +30,23 @@ public class testProgram {
 			url = ((urlInfo)urlIdInfo.getEntryObject(key)).url;
 			writer.println(((urlInfo)urlIdInfo.getEntryObject(key)).title);
 			writer.println(url);
-			writer.printf("Last modification %s, %d",((urlInfo)urlIdInfo.getEntryObject(key)).lastModified,((urlInfo)urlIdInfo.getEntryObject(key)).size);
-			writer.println("Title keywords:");
+			writer.printf("%s, %d",((urlInfo)urlIdInfo.getEntryObject(key)).lastModified,((urlInfo)urlIdInfo.getEntryObject(key)).size);
+//			writer.println("Title keywords:")
 			
 			for(String temp : ((urlInfo)urlIdInfo.getEntryObject(key)).titleWordIds)
 			{
-				writer.print(temp);
+				writer.print(((Word)idTitleIndex.getEntryObject(temp)).getWord());
 				writer.print(" ");
 				writer.print(((Word)idTitleIndex.getEntryObject(temp)).freq(key));
-				writer.print(";");
+				writer.print("; ");
 			}
 			writer.println();
 			for(String temp : ((urlInfo)urlIdInfo.getEntryObject(key)).bodyWordIds)
 			{
-				writer.print(temp);
+				writer.print(((Word)idBodyIndex.getEntryObject(temp)).getWord());
 				writer.print(" ");
 				writer.print(((Word)idBodyIndex.getEntryObject(temp)).freq(key));
-				writer.print(";");
+				writer.print("; ");
 			}
 			writer.println();
 			for(int temp : ((urlInfo)urlIdInfo.getEntryObject(key)).children)
