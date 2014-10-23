@@ -31,18 +31,26 @@ public class testProgram {
 			writer.println(((urlInfo)urlIdInfo.getEntryObject(key)).title);
 			writer.println(url);
 			writer.printf("%s, %d",((urlInfo)urlIdInfo.getEntryObject(key)).lastModified,((urlInfo)urlIdInfo.getEntryObject(key)).size);
-//			writer.println("Title keywords:")
 			
+			boolean lb = false;
 			for(String temp : ((urlInfo)urlIdInfo.getEntryObject(key)).titleWordIds)
 			{
+				if (!lb) {
+					writer.println();
+					lb = true;
+				}
 				writer.print(((Word)idTitleIndex.getEntryObject(temp)).getWord());
 				writer.print(" ");
 				writer.print(((Word)idTitleIndex.getEntryObject(temp)).freq(key));
 				writer.print("; ");
 			}
-			writer.println();
+
 			for(String temp : ((urlInfo)urlIdInfo.getEntryObject(key)).bodyWordIds)
 			{
+				if (!lb) {
+					writer.println();
+					lb = true;
+				}
 				writer.print(((Word)idBodyIndex.getEntryObject(temp)).getWord());
 				writer.print(" ");
 				writer.print(((Word)idBodyIndex.getEntryObject(temp)).freq(key));
