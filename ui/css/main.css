@@ -105,10 +105,36 @@ form.search input {
 }
 
 .result-body {
-	margin-top:4px;
+	margin:5px 0;
 }
 
 .result-body span + span{
+	margin-left:8px;
+}
+
+.result-stats {
+	margin-top:20px;
+	text-align:right;
+}
+
+.result-stat {
+	text-align:center;
+	display:inline-block;
+	background:#eee;
+	padding:5px 10px;
+	border-radius:3px;
+	border:1px solid #ddd;
+}
+.result-stat + .result-stat {
+	margin-left:15px;
+}
+
+.result-stats span {
+	display:block;
+	font-size:1.4em;
+}
+
+.result-frequent span + span {
 	margin-left:8px;
 }
 
