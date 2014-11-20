@@ -20,4 +20,7 @@ $(document).ready(function() {
 		temp.find('.result-title').text(title);
 		$('.results').append(temp);
 	}
+	$('html,body').animate({
+		scrollTop: $(".results").offset().top-50
+	});
 });
