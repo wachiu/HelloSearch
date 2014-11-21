@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -59,6 +60,18 @@ class Word implements Serializable {
 	
 	public int df() {
 		return lists.size();
+	}
+	
+	public int maxTf() {
+		int max = 0;
+		ListIterator<Posting> iter = lists.listIterator();
+		Posting temp;
+		while(iter.hasNext()) {
+			temp = iter.next();
+			if(temp.tf() > max)
+				max = temp.tf();
+		}
+		return max;
 	}
 	
 	public int freq(String id) {
