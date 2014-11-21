@@ -2,11 +2,23 @@ package project;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.lang.Math.*;
 
 import jdbm.helper.FastIterator;
+
+class ScoreComparator implements Comparator<score> {
+
+	@Override
+	public int compare(score arg0, score arg1) {
+		// TODO Auto-generated method stub
+		return (int)(arg0.score - arg1.score);
+	}
+	
+}
 
 class score {
 	String urlId;
@@ -15,7 +27,10 @@ class score {
 		this.urlId = id;
 		this.score = temp;
 	}
+	
 }
+
+
 
 public class VectorSpace {
 	private ArrayList<String> query;
@@ -55,7 +70,7 @@ public class VectorSpace {
 	}
 	
 	
-	public String[]  compute() throws IOException {
+	public ArrayList<score>  compute() throws IOException {
 		String tempWordId;
 		Word tempWord;
 		String tempUrlId;
@@ -98,8 +113,9 @@ public class VectorSpace {
 				}	
 			}
 		}
-		
-		return new String[10];
+		Comparator comparator = new ScoreComparator();
+		Collections.sort(this.similarity, comparator);
+		return this.similarity;
 	}
 	
 }
