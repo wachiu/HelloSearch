@@ -18,7 +18,7 @@ body {
 
 .logo h1 {
 	color:#dd1c2b;
-	font-weight:800;
+	font-weight:100;
 	text-align:center;
 	font-size:6em;
 	margin:0 0 15px;
@@ -30,10 +30,10 @@ body {
 	z-index:-1;
 	left:50%;
 	margin-top:-30px;
-	margin-left:72px;
+	margin-left:65px;
 	background:#dd1c2b;
 	height:84%;
-	width:12px;
+	width:5px;
 }
 
 nav {
