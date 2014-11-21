@@ -15,7 +15,7 @@ class VectorScoreComparator implements Comparator<VectorScore> {
 	@Override
 	public int compare(VectorScore arg0, VectorScore arg1) {
 		// TODO Auto-generated method stub
-		return (int)(arg0.score - arg1.score);
+		return -(int)(arg0.score - arg1.score);
 	}
 	
 }
@@ -24,17 +24,21 @@ class VectorScoreComparator implements Comparator<VectorScore> {
 public class VectorSpace {
 	private ArrayList<String> query;
 	private InvertedIndex bodyId;
-	private InvertedIndex idBody;
 	private InvertedIndex titleId;
+	private InvertedIndex idBody;
 	private InvertedIndex idTitle;
 	private ArrayList<VectorScore> similarity;
-	public VectorSpace(ArrayList<String> query, InvertedIndex bodyId, InvertedIndex idBody, InvertedIndex titleId, InvertedIndex idTitle) {
-		//problem?
+	public VectorSpace(ArrayList<String> query) {
 		this.query = query;
-		this.bodyId = bodyId;
-		this.idBody = idBody;
-		this.titleId = titleId;
-		this.idTitle = idTitle;
+		try {
+			this.bodyId = new InvertedIndex("bodyId", "ht1");
+			this.idBody = new InvertedIndex("idBody", "ht1");
+			this.titleId = new InvertedIndex("titleId", "ht1");
+			this.idTitle = new InvertedIndex("idTitle", "ht1");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.similarity = new ArrayList<VectorScore>();
 	}
 	private Boolean checkSimilarity(String check) {
@@ -70,8 +74,17 @@ public class VectorSpace {
 		ListIterator<String> qIter = query.listIterator();
 		Posting tempPosting;
 		while(qIter.hasNext()) {
-			tempWordId = (String)bodyId.getEntryObject(qIter.next());
+			String next = qIter.next();
+			
+			//check if the word exists in bodyId hashtable
+			if(!bodyId.exists(next)) continue;
+			tempWordId = (String)bodyId.getEntryObject(next);
+			
+			//check if the word id exists in the idBody hashtable
+			if(!idBody.exists(tempWordId)) continue;
 			tempWord = (Word)idBody.getEntryObject(tempWordId);
+			
+			
 			tempList = tempWord.getPosting();
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
@@ -85,10 +98,20 @@ public class VectorSpace {
 				}	
 			}
 		}
+		
 		qIter = query.listIterator();
 		while(qIter.hasNext()) {
-			tempWordId = (String)titleId.getEntryObject(qIter.next());
+			String next = qIter.next();
+			
+			//check if the word exists in bodyId hashtable
+			if(!titleId.exists(next)) continue;
+			tempWordId = (String)titleId.getEntryObject(next);
+			
+			//check if the word id exists in the idBody hashtable
+			if(!idTitle.exists(tempWordId)) continue;
 			tempWord = (Word)idTitle.getEntryObject(tempWordId);
+			
+			
 			tempList = tempWord.getPosting();
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {

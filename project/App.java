@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import jdbm.helper.FastIterator;
 
+
 public class App {
 
 	private Indexer indexer;
@@ -41,30 +42,18 @@ public class App {
 		indexer.finalize();
 	}
 	
-	public void search(String query) {
+	public void search(String query) throws IOException {
 		
 		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.split(" ")));
 		
-		try {
-			InvertedIndex bodyIdIndex = new InvertedIndex("bodyId", "ht1");
-			InvertedIndex titleIdIndex = new InvertedIndex("titleId", "ht1");
-			InvertedIndex idBodyIndex = new InvertedIndex("idBody", "ht1");
-			InvertedIndex idTitleIndex = new InvertedIndex("idTitle", "ht1");
-			VectorSpace vs = new VectorSpace(al, bodyIdIndex, idBodyIndex, titleIdIndex, idTitleIndex);
+		VectorSpace vs = new VectorSpace(al);
 			
-			ArrayList<VectorScore> ss = vs.compute();
+		ArrayList<VectorScore> ss = vs.compute();
 			
-			JSONArray ja = new JSONArray();
-			for(VectorScore vso:ss)
-				ja.put(new JSONObject(vso));
-			System.out.println(ja.toString());
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
+		JSONArray ja = new JSONArray();
+		for(VectorScore vso:ss)
+			ja.put(new JSONObject(new QueryInfo(vso)));
+		System.out.println(ja.toString());
 		
 	}
 	
@@ -125,7 +114,12 @@ public class App {
 		App app = new App();
 		
 		if(args.length >= 2 && (args[0].equals("query") || args[0].equals("search"))) {
-			app.search(args[1].toLowerCase());
+			try {
+				app.search(args[1].toLowerCase());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else if(args.length == 1 && args[0].equals("index")) {
 			app.run();

@@ -12,4 +12,8 @@ public class VectorScore {
 		return score;
 	}
 	
+	public String getUrlId() {
+		return urlId;
+	}
+	
 }

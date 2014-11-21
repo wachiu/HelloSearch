@@ -20,7 +20,7 @@ class Word implements Serializable {
 	
 	
 	public Word(String word) {
-		this.word = word;
+		this.word = word.toLowerCase();
 		this.lists = new LinkedList<Posting>();
 	}
 	

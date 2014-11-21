@@ -23,8 +23,8 @@
 				<h1>Hello</h1>
 				<div class="thing"></div>
 			</div>
-			<form class="search" action="results.html">
-				<input class="form-control">
+			<form class="search" method="POST" action="results.php">
+				<input name="query" class="form-control" autocomplete="off">
 			</form>
 		</div><!-- /.container -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
