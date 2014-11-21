@@ -13,7 +13,7 @@ public class App {
 	public App() {
 		indexer = new Indexer();
 		try {
-			spider = new Spider("http://www.cse.ust.hk/", 30, indexer);
+			spider = new Spider("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 300, indexer);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
