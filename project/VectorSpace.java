@@ -10,26 +10,15 @@ import java.lang.Math.*;
 
 import jdbm.helper.FastIterator;
 
-class ScoreComparator implements Comparator<score> {
+class VectorScoreComparator implements Comparator<VectorScore> {
 
 	@Override
-	public int compare(score arg0, score arg1) {
+	public int compare(VectorScore arg0, VectorScore arg1) {
 		// TODO Auto-generated method stub
 		return (int)(arg0.score - arg1.score);
 	}
 	
 }
-
-class score {
-	String urlId;
-	double score;
-	score(String id, double temp) {
-		this.urlId = id;
-		this.score = temp;
-	}
-	
-}
-
 
 
 public class VectorSpace {
@@ -38,7 +27,7 @@ public class VectorSpace {
 	private InvertedIndex idBody;
 	private InvertedIndex titleId;
 	private InvertedIndex idTitle;
-	private ArrayList<score> similarity;
+	private ArrayList<VectorScore> similarity;
 	public VectorSpace(ArrayList<String> query, InvertedIndex bodyId, InvertedIndex idBody, InvertedIndex titleId, InvertedIndex idTitle) {
 		//problem?
 		this.query = query;
@@ -46,11 +35,11 @@ public class VectorSpace {
 		this.idBody = idBody;
 		this.titleId = titleId;
 		this.idTitle = idTitle;
-		this.similarity = new ArrayList<score>();
+		this.similarity = new ArrayList<VectorScore>();
 	}
 	private Boolean checkSimilarity(String check) {
 		Boolean result = false;
-		score temp;
+		VectorScore temp;
 		for(int i = 0; i < similarity.size();i++) {
 			temp = similarity.get(i);
 			if(temp.urlId == check)
@@ -59,7 +48,7 @@ public class VectorSpace {
 		return result;
 	}
 	private void setSimilarity(String check, double input) {
-		score temp;
+		VectorScore temp;
 		for(int i = 0; i < similarity.size();i++) {
 			temp = similarity.get(i);
 			if(temp.urlId == check) {
@@ -70,7 +59,7 @@ public class VectorSpace {
 	}
 	
 	
-	public ArrayList<score>  compute() throws IOException {
+	public ArrayList<VectorScore>  compute() throws IOException {
 		String tempWordId;
 		Word tempWord;
 		String tempUrlId;
@@ -92,7 +81,7 @@ public class VectorSpace {
 					setSimilarity(tempPosting.getDocumentId(),tempWeight);
 				}
 				else {
-					similarity.add(new score(tempPosting.getDocumentId(), tempWeight));
+					similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight));
 				}	
 			}
 		}
@@ -109,11 +98,11 @@ public class VectorSpace {
 					setSimilarity(tempPosting.getDocumentId(),tempWeight);
 				}
 				else {
-					similarity.add(new score(tempPosting.getDocumentId(), tempWeight));
+					similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight));
 				}	
 			}
 		}
-		Comparator comparator = new ScoreComparator();
+		Comparator comparator = new VectorScoreComparator();
 		Collections.sort(this.similarity, comparator);
 		return this.similarity;
 	}

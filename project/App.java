@@ -1,7 +1,12 @@
 package project;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import jdbm.helper.FastIterator;
 
@@ -11,16 +16,18 @@ public class App {
 	private Spider spider;
 	
 	public App() {
+
+	}
+	
+	public void run() {
 		indexer = new Indexer();
 		try {
-			spider = new Spider("http://www.cse.ust.hk/", 30, indexer);
+			spider = new Spider("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 300, indexer);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	public void run() {
+		
 		try {
 			spider.crawl();
 		} catch (IOException e) {
@@ -32,6 +39,33 @@ public class App {
 	public void finalize() {
 		spider.finalize();
 		indexer.finalize();
+	}
+	
+	public void search(String query) {
+		
+		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.split(" ")));
+		
+		try {
+			InvertedIndex bodyIdIndex = new InvertedIndex("bodyId", "ht1");
+			InvertedIndex titleIdIndex = new InvertedIndex("titleId", "ht1");
+			InvertedIndex idBodyIndex = new InvertedIndex("idBody", "ht1");
+			InvertedIndex idTitleIndex = new InvertedIndex("idTitle", "ht1");
+			VectorSpace vs = new VectorSpace(al, bodyIdIndex, idBodyIndex, titleIdIndex, idTitleIndex);
+			
+			ArrayList<VectorScore> ss = vs.compute();
+			
+			JSONArray ja = new JSONArray();
+			for(VectorScore vso:ss)
+				ja.put(new JSONObject(vso));
+			System.out.println(ja.toString());
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 	
 	public static void test() {
@@ -89,8 +123,14 @@ public class App {
 	public static void main (String[] args) {
 		//*//
 		App app = new App();
-		app.run();
-		app.finalize();
+		
+		if(args.length >= 2 && (args[0].equals("query") || args[0].equals("search"))) {
+			app.search(args[1].toLowerCase());
+		}
+		else if(args.length == 1 && args[0].equals("index")) {
+			app.run();
+			app.finalize();
+		}
 		/*/
 		App.test();
 		//*/
