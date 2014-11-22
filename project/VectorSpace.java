@@ -53,6 +53,18 @@ public class VectorSpace {
 		VectorScore temp;
 		for(int i = 0; i < similarity.size();i++) {
 			temp = similarity.get(i);
+			if(temp.urlId.equals(check))
+				result = true;
+		}
+		return result;
+	}
+	private Boolean checkSimilarity1(String check) {
+		Boolean result = false;
+		VectorScore temp;
+		for(int i = 0; i < similarity.size();i++) {
+			temp = similarity.get(i);
+			System.out.print(check+" "+temp.urlId);
+			System.out.println();
 			if(temp.urlId == check)
 				result = true;
 		}
@@ -151,17 +163,19 @@ public class VectorSpace {
 		}
 		Comparator comparator = new VectorScoreComparator();
 		Collections.sort(this.similarity, comparator);
-		/*for(VectorScore o : this.similarity) {
-			System.out.print(o.urlId + " " + o.score);
-			System.out.println();
-		}*/
+//		for(VectorScore o : this.similarity) {
+//			System.out.print(o.urlId + " " + o.score);
+//			System.out.println();
+//		}
+//		System.out.print(checkSimilarity1("179"));
+//		System.out.println();
 		return this.similarity;
 	}
 	public static void main (String[] args) throws IOException {
 		ArrayList<String> query = new ArrayList<String>();
 		query.add("result");
 		VectorSpace test1 = new VectorSpace(query);
-		ArrayList<VectorScore> test2 = test1.compute();;
+		ArrayList<VectorScore> test2 = test1.compute();
 		for(VectorScore o:test2) {
 			System.out.print(o.urlId + o.score);
 			System.out.println();
