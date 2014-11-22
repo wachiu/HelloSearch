@@ -58,18 +58,7 @@ public class VectorSpace {
 		}
 		return result;
 	}
-	private Boolean checkSimilarity1(String check) {
-		Boolean result = false;
-		VectorScore temp;
-		for(int i = 0; i < similarity.size();i++) {
-			temp = similarity.get(i);
-			System.out.print(check+" "+temp.urlId);
-			System.out.println();
-			if(temp.urlId == check)
-				result = true;
-		}
-		return result;
-	}
+
 	private void setSimilarity(String check, double input) {
 		VectorScore temp;
 		for(int i = 0; i < similarity.size();i++) {
@@ -105,8 +94,6 @@ public class VectorSpace {
 			//check if the word id exists in the idBody hashtable
 			if(!idBody.exists(tempWordId)) continue;
 			tempWord = (Word)idBody.getEntryObject(tempWordId);
-			//System.out.print(tempWord.getWord());
-			//System.out.println();
 			
 			
 			tempList = tempWord.getPosting();
@@ -114,13 +101,7 @@ public class VectorSpace {
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
-				//System.out.print(tempPosting.getDocumentId());
-				//System.out.println();
-				//System.out.print((double)tempPosting.tf()+" "+(double)tempWord.maxTf()+" "+Math.log10((double)(300.00/tempWord.df()))+" "+Math.log10(2.00));
-				//System.out.println();
 				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
-				//System.out.print(tempWeight);
-				//System.out.println();
 				if(checkSimilarity(tempPosting.getDocumentId())) {
 					setSimilarity(tempPosting.getDocumentId(),tempWeight);
 				}
@@ -163,23 +144,13 @@ public class VectorSpace {
 		}
 		Comparator comparator = new VectorScoreComparator();
 		Collections.sort(this.similarity, comparator);
+		Ranking merge = new Ranking(this.similarity);
+		this.similarity = merge.compute();
 //		for(VectorScore o : this.similarity) {
 //			System.out.print(o.urlId + " " + o.score);
 //			System.out.println();
 //		}
-//		System.out.print(checkSimilarity1("179"));
-//		System.out.println();
+		
 		return this.similarity;
-	}
-	public static void main (String[] args) throws IOException {
-		ArrayList<String> query = new ArrayList<String>();
-		query.add("result");
-		VectorSpace test1 = new VectorSpace(query);
-		ArrayList<VectorScore> test2 = test1.compute();
-		for(VectorScore o:test2) {
-			System.out.print(o.urlId + o.score);
-			System.out.println();
-		}
-		return;
 	}
 }
