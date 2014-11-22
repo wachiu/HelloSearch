@@ -22,6 +22,7 @@ public class QueryInfo {
 	private InvertedIndex idBodyIndex;
 	private ArrayList<String> queryString;
 	private InvertedIndex bodyIdIndex;
+	private StopStem stopStem;
 	
 	public QueryInfo(VectorScore vso, ArrayList<String> queryString) throws IOException {
 		this.vso = vso;
@@ -31,7 +32,7 @@ public class QueryInfo {
 		//this.urlId = new InvertedIndex("urlId", "ht1");
 		info = (urlInfo)idUrl.getEntryObject(vso.getUrlId());
 		this.queryString = new ArrayList<String>();
-		StopStem stopStem = GlobalFile.stopStem();
+		stopStem = GlobalFile.stopStem();
 		for(String s : queryString) {
 			if(stopStem.isStopWord(s)) continue;
 			this.queryString.add(stopStem.stem(s));
@@ -69,7 +70,7 @@ public class QueryInfo {
 		int i = 0;
 		for(Entry<String, Integer> e : map.entrySet()) {
 			ja.put(e);
-			if(i++ > 4) break;
+			if(i++ >= 4) break;
 		}
 		
 		return ja.toString();
@@ -101,28 +102,43 @@ public class QueryInfo {
 	
 	public String getDocumentText() throws IOException {
 		if(queryString.size() == 0) return "";
-		
-		String word = queryString.get(0);
-		Word w = (Word)this.idBodyIndex.getEntryObject(
-			//id
-			(String)this.bodyIdIndex.getEntryObject(word)
-		);
-		LinkedList<Integer> positions = w.getPosting(this.getUrlId()).getPositionsByList();
-		ArrayList<String> documentText = info.getDocumentText();
 		String text = "";
-		int firstposition = positions.getFirst();
+		String curText = "";
+		int firstposition;
+		LinkedList<Integer> positions = null;
+		ArrayList<String> documentText = null;
+		
+		for(int i = 0; i < queryString.size(); i++) {
+			String word = queryString.get(i);
+			
+			Word w = (Word)this.idBodyIndex.getEntryObject(
+				//id
+				(String)this.bodyIdIndex.getEntryObject(word)
+			);
+			
+			Posting posting = w.getPosting(this.getUrlId());
+			if(posting == null) continue;
+			
+			positions = posting.getPositionsByList();
+			documentText = info.getDocumentText();
+			
+			if(positions.size() != 0) break;
+		}
+		
+		firstposition = positions.getFirst();
 		
 		for(int i = firstposition - 10; i < firstposition + 10; i++) {
 			if(0 <= i && i < documentText.size()) {
-				if(i == firstposition) {
-					text += "<b>" + documentText.get(i) + "</b> ";
+				curText = documentText.get(i);
+				
+				if(queryString.indexOf(stopStem.stem(curText)) != -1) {
+					text += "<b>" + curText + "</b> ";
 				}
 				else {
-					text += documentText.get(i) + " ";
+					text += curText + " ";
 				}
 			}
 		}
-		
 		return text;
 	}
 	/*
