@@ -2,4 +2,9 @@
 *.lg
 *.db
 .DS_Store
+<<<<<<< HEAD
 app.jar
+=======
+cached/*
+executable/app.jar
+>>>>>>> 57d4ed594ca5a3d3ae2d98d01c44a1d3c2c03e3a
