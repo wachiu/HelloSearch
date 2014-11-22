@@ -1,21 +1,45 @@
+var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
+
 var HelloHistory = function() {
 	this.storedHistory;
+	this.itemTemplate = $('.history-item').clone();
 }
 
 HelloHistory.prototype = {
 	constructor: HelloHistory,
 	init: function() {
-		this.add("This is a test search!");
-		this.populate();
+		var self = this;
+		$('.history-item').remove();
+		self.populate();
+		$('.history-clear').click(self.clear.bind(self));
+		$('nav .his').click(function() {
+			$('.history').toggle();
+		});
 	},
 	populate: function() {
-		$('.history-list').html();
+		var self = this;
+		$('.history-list').html("");
 		var storedHistory = this.retrieve();
-		console.log(storedHistory);
-		$.each(storedHistory, function(index, item) {
-			var date = new Date(item.searchDate);
-			$('.history-list').append("<li>" + item.query + " <span>" + date.getMonth() + "</span></li>");
-		});
+		if(storedHistory) {
+			$.each(storedHistory, function(index, item) {
+				var date = new Date(item.searchDate);
+				var hours = date.getHours();
+				var ampm = hours >= 12 ? 'pm' : 'am';
+				var dateString = monthNames[date.getMonth()] + " " + date.getDate() + ", " + hours + ":" + date.getMinutes() + ampm;
+
+				var newItem = self.itemTemplate.clone();
+				newItem.find('.history-query').text(item.query);
+				newItem.find('.history-date').text(dateString);
+
+				$('.history-list').prepend(newItem);
+			});
+		} else {
+			self.showMessage();
+		}
+		
+	},
+	showMessage: function() {
+		$('.history-list').append("<p class='message'>You have no search history.</p>");
 	},
 	retrieve: function() {
 		return JSON.parse(localStorage.getItem('helloHistory'));
@@ -37,8 +61,11 @@ HelloHistory.prototype = {
 			});
 		}
 		this.store(JSON.stringify(storedHistory));
+		this.populate();
 	},
 	clear: function() {
+		$('.history-list').html("");
+		this.showMessage();
 		localStorage.setItem('helloHistory', null);
 	}
 }
@@ -48,12 +75,13 @@ var HelloSearch = function(form) {
 	this.form = $(form);
 	this.resultTemplate = $('.result').clone();
 	this.searched = false;
+	this.history = new HelloHistory();
 };
 HelloSearch.prototype = {
 	constructor: HelloSearch,
 	init: function() {
-		$('.result').remove();
 		var self = this;
+		self.history.init();
 		self.form.submit(function(e) {
 			e.preventDefault();
 			self.search();
@@ -72,12 +100,11 @@ HelloSearch.prototype = {
 				success: self.showResults.bind(self),
 				beforeSend: function() {
 					$('.searching').stop(true).fadeIn();
-					$('.results').stop(true).fadeOut(function() {
-						$('.result').remove();
-					});
+					$('.results').stop(true).fadeOut();
 				},
 				complete: function() {
 					$('.searching').stop(true).fadeOut();
+					self.history.add(input.val());
 				}
 			});
 		}
@@ -91,6 +118,7 @@ HelloSearch.prototype = {
 		var has_query = data.has_query;
 
 		if(results) {
+			$('.result').remove();
 			$('.results-count').text(results.length);
 			$('.results-time').text(data.finished_time);
 			
@@ -108,6 +136,8 @@ HelloSearch.prototype = {
 				});
 				this.searched = true;
 			}
+		} else {
+			// show message 
 		}
 	},
 	makeResult: function(result) {
@@ -117,13 +147,7 @@ HelloSearch.prototype = {
 		newResult.find('.result-url').text(result.url);
 		newResult.find('.result-modified').text(result.lastModified);
 		newResult.find('.result-score').text(parseFloat(result.score).toFixed(2));
-		newResult.find('.result-size').text(result.size + " kb");	
-		newResult.find('.result-size').text(result.size);	
-		var wordFreqs = $.parseJSON(result.wordFreqs);
-		newResult.find('.result-frequent').html($(wordFreqs.map(function(v) {
-			v = v.split("=");
-			return '<span>' + v[0] + ' <span class="badge">' + v[1] + '</span></span>';
-		})).get().join(""));
+		newResult.find('.result-size').text(result.size + " b");	
 		return newResult;
 	}
 }
@@ -131,6 +155,4 @@ HelloSearch.prototype = {
 $(document).ready(function() {
 	var hs = new HelloSearch('form.search');
 	hs.init();
-	var hh = new HelloHistory();
-	hh.init();
 });

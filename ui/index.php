@@ -15,15 +15,17 @@
 		<nav>
 			<ul>
 				<li class="active"><a href="#">Search</a></li>
-				<li><a href="#">History</a></li>
+				<li class="his"><a href="#">History</a></li>
 			</ul>
 		</nav>
 		<?php include 'templates/searchform.php' ?>
 
 		<div class="history">
-			<p>History</p>
 			<div class="history-list">
-				<li>Seacas <span>(Nov 11 2014)</span></li>
+				<div class="history-item">
+					<div class="history-query"></div>
+					<div class="history-date"></div>
+				</div>
 			</div>
 			<button class="btn btn-default history-clear">Clear History</button>
 		</div>
