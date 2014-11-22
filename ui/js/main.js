@@ -27,6 +27,8 @@ HelloHistory.prototype = {
 				var ampm = hours >= 12 ? 'pm' : 'am';
 				var dateString = monthNames[date.getMonth()] + " " + date.getDate() + ", " + hours + ":" + date.getMinutes() + ampm;
 
+				if(hours > 12) hours -= 12;
+
 				var newItem = self.itemTemplate.clone();
 				newItem.find('.history-query').text(item.query);
 				newItem.find('.history-date').text(dateString);
@@ -156,11 +158,11 @@ HelloSearch.prototype = {
 	makeResult: function(result) {
 		var self = this;
 		var newResult = self.resultTemplate.clone();
-		newResult.find('.result-title').text(result.pageTitle);
-		newResult.find('.result-url').text(result.url);
+		newResult.find('.result-title').text(result.pageTitle).attr('href', result.url);
+		newResult.find('.result-url').text(result.url).attr('href', result.url);
 		newResult.find('.result-modified').text(result.lastModified);
 		newResult.find('.result-score').text(parseFloat(result.score).toFixed(2));
-		newResult.find('.result-size').text(result.size + " b");	
+		newResult.find('.result-size').text(parseFloat((result.size)/1024).toFixed(2) + " kb");	
 		return newResult;
 	}
 }

@@ -51,6 +51,10 @@ nav ul li {
 	padding:10px;
 }
 
+nav ul li a:hover {
+	text-decoration:none;
+}
+
 nav ul {
 	padding:0;
 	border-bottom:1px #e5e5e5 solid;
@@ -176,12 +180,13 @@ footer {
 .history {
 	display:none;
 	position:absolute;
-	top:42px;
+	top:40px;
 	left:50%;
-	margin-left:-4px;
+	margin-left:-5px;
 	width:400px;
 	padding:30px;
 	background:white;
+	border:1px solid #e5e5e5;
 	box-shadow:0 2px 3px rgba(0,0,0,0.1);
 }
 
