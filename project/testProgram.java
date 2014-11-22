@@ -33,7 +33,7 @@ public class testProgram {
 			writer.printf("%s, %d",((urlInfo)urlIdInfo.getEntryObject(key)).lastModified,((urlInfo)urlIdInfo.getEntryObject(key)).size);
 //			writer.println("Title keywords:")
 			
-			for(String temp : ((urlInfo)urlIdInfo.getEntryObject(key)).titleWordIds)
+			for(String temp : ((urlInfo)urlIdInfo.getEntryObject(key)).getTitleWordIds())
 			{
 				writer.print(((Word)idTitleIndex.getEntryObject(temp)).getWord());
 				writer.print(" ");
@@ -41,7 +41,7 @@ public class testProgram {
 				writer.print("; ");
 			}
 			writer.println();
-			for(String temp : ((urlInfo)urlIdInfo.getEntryObject(key)).bodyWordIds)
+			for(String temp : ((urlInfo)urlIdInfo.getEntryObject(key)).getBodyWordIds())
 			{
 				writer.print(((Word)idBodyIndex.getEntryObject(temp)).getWord());
 				writer.print(" ");

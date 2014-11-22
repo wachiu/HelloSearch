@@ -18,13 +18,13 @@ class App {
 	public function run() {
 
 		//check if any query come in
-		if(isset($_POST['query'])) $this->query_str = $_POST['query'];
+		if(isset($_GET['query'])) $this->query_str = $_GET['query'];
 		else return;
 
 		$raw = null;
 
 		//check if jar exists
-		if(file_exists('../executable/app.jar')) $raw = shell_exec('cd ../executable/ && java -jar app.jar search ' . escapeshellcmd($this->query_str));
+		if(file_exists('../executable/app.jar')) $raw = shell_exec('cd ../executable/ && java -jar app.jar search ' . escapeshellarg($this->query_str));
 		else return;
 
 		$this->results = json_decode($raw);
@@ -49,6 +49,10 @@ class App {
 		//if no query, time will be negative, use random time to pretend ...
 		if($time < 0) return '0.0' . rand(10, 99);
 		else return number_format($time, 3);
+	}
+
+	public function is_ajax() {
+		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 	}
 
 }

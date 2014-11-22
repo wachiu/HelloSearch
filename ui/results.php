@@ -8,18 +8,29 @@ include 'layer.php';
 
 $results = $app->get_results();
 
-$query_str = $app->get_query_str();
+$query_str = htmlentities($app->get_query_str());
 
 $finished_time = $app->get_finished_time();
 
 $has_query = $app->has_query();
+
+if($app->is_ajax()) {
+	$return = array(
+		'results' => $results,
+		'query_str' => $query_str,
+		'finished_time' => $finished_time,
+		'has_query' => $has_query
+	);
+	echo json_encode($return);
+	die();
+}
 
 //document start
 ?>
 <!doctype html>
 <html>
 	<head>
-		<title>:query: | Hello Search</title>
+		<title><?=$query_str?> | Hello Search</title>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,23 +48,15 @@ $has_query = $app->has_query();
 			</ul>
 		</nav>
 
-		<div class="container search">
-			<div class="logo">
-				<h1>Hello</h1>
-				<div class="thing"></div>
-			</div>
-			<form class="search" method="POST" action="">
-				<input name="query" class="form-control" value="<?=$query_str?>" autocomplete="off">
-			</form>
-		</div><!-- /.container -->
+
 
 <?php if($has_query) { ?>
 
 		<div class="container results">
 			<p>Showing <?=count($results)?> results (<?=$finished_time?> seconds)</p>
 			
-			<!--
-			<div class="result row">
+			
+			<div class="result row" display="none">
 				<div class="col-sm-9">
 					<div class="result-header">
 						<a class="result-title" href="#">This is the page's title</a>
@@ -85,10 +88,10 @@ $has_query = $app->has_query();
 					</div>
 				</div>
 			</div>
-			-->
+			
 			<!-- end of div.result.row -->
 
-<?php for($i = 0; $i < count($results) && $result = $results[$i]; $i++) { ?>
+<?php foreach($results as $result) { ?>
 			<div class="result row">
 				<div class="col-sm-9">
 					<div class="result-header">

@@ -1,10 +1,16 @@
 package project;
 
+import java.awt.List;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -145,6 +151,30 @@ public class Indexer {
 		}
 	}
 	
+	public Map<String, Integer> BodyWordUniqCount(String id, String body) throws IOException {
+		body = body.replaceAll("<[^>]*>", "");	//remove all tags
+		
+		//then index body
+		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
+		
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		String text;
+		
+		while(m.find()) {
+			text = m.group(1).toLowerCase();
+			if(stopStem.isStopWord(text)) continue;
+			
+			if(map.get(text) == null) {
+				map.put(text, 1);
+			}
+			else {
+				map.put(text, map.get(text) + 1);
+			}
+		}
+		
+		return map;
+	}
+	
 	public LinkedHashSet<String> IndexTitle(String id, String title) {
 		LinkedHashSet<String> ss = new LinkedHashSet<String>();
 		
@@ -154,7 +184,7 @@ public class Indexer {
 		
 		int position = 0;
 		while(m.find()) {
-		    String text = m.group(1);
+		    String text = m.group(1).toLowerCase();
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
 		    
@@ -196,8 +226,7 @@ public class Indexer {
 		
 		int position = 0;
 		while(m.find()) {
-		    String text = m.group(1);
-		    
+		    String text = m.group(1).toLowerCase();
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
 		    if(text.equals("")) continue;
@@ -225,6 +254,9 @@ public class Indexer {
 			}
 		    //System.out.println(id + ":" + text);
 		}
+		
+		
+		//map.add(new Entry<String, Integer>());
 		
 		return ss;
 	}
