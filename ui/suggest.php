@@ -9,12 +9,12 @@ $app->suggest();
 
 $results = $app->get_results();
 
-//if($app->is_ajax()) {
+if($app->is_ajax()) {
 	$return = array(
 		'results' => $results
 	);
 	echo json_encode($return);
 	die();
-//}
+}
 
 ?>
