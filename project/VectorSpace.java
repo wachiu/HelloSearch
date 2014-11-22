@@ -15,7 +15,12 @@ class VectorScoreComparator implements Comparator<VectorScore> {
 	@Override
 	public int compare(VectorScore arg0, VectorScore arg1) {
 		// TODO Auto-generated method stub
-		return -(int)(arg0.score - arg1.score);
+		if(arg0.score > arg1.score)
+			return -1;
+		else if(arg0.score == arg1.score)
+			return 0;
+		else
+			return 1;
 	}
 	
 }
@@ -135,7 +140,7 @@ public class VectorSpace {
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
-				tempWeight = (tempPosting.tf() / tempWord.maxTf()) * (Math.log10((double)(300/tempWord.df()))/Math.log10(2.00));
+				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
 				if(checkSimilarity(tempPosting.getDocumentId())) {
 					setSimilarity(tempPosting.getDocumentId(),tempWeight);
 				}
@@ -146,7 +151,7 @@ public class VectorSpace {
 		}
 		Comparator comparator = new VectorScoreComparator();
 		Collections.sort(this.similarity, comparator);
-		/*for(VectorScore o : similarity) {
+		/*for(VectorScore o : this.similarity) {
 			System.out.print(o.urlId + " " + o.score);
 			System.out.println();
 		}*/
