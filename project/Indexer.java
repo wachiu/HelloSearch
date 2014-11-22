@@ -147,16 +147,11 @@ public class Indexer {
 	public Indexer() {
 		bodywordId = 0;
 		titlewordId = 0;
-		try {
-			stopStem = new StopStem("stopwords.txt");
-			bodyIdIndex = new InvertedIndex("bodyId", "ht1");
-			titleIdIndex = new InvertedIndex("titleId", "ht1");
-			idBodyIndex = new InvertedIndex("idBody", "ht1");
-			idTitleIndex = new InvertedIndex("idTitle", "ht1");
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace ();
-		}
+		stopStem = GlobalFile.stopStem();
+		bodyIdIndex = GlobalFile.bodyId();
+		titleIdIndex = GlobalFile.titleId();
+		idBodyIndex = GlobalFile.idBody();
+		idTitleIndex = GlobalFile.idTitle();
 	}
 	
 	public ArrayList<String> BodyDocumentText(String body) {

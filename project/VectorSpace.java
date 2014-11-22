@@ -38,16 +38,11 @@ public class VectorSpace {
 	public VectorSpace(ArrayList<String> query, ArrayList<String> phase) {
 		this.query = query;
 		this.phase = phase;
-		try {
-			this.stopStem = new StopStem("stopwords.txt");
-			this.bodyId = new InvertedIndex("bodyId", "ht1");
-			this.idBody = new InvertedIndex("idBody", "ht1");
-			this.titleId = new InvertedIndex("titleId", "ht1");
-			this.idTitle = new InvertedIndex("idTitle", "ht1");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.stopStem = GlobalFile.stopStem();
+		this.bodyId = GlobalFile.bodyId();
+		this.idBody = GlobalFile.idBody();
+		this.titleId = GlobalFile.titleId();
+		this.idTitle = GlobalFile.idTitle();
 		this.similarity = new ArrayList<VectorScore>();
 	}
 	private Boolean checkSimilarity(String check) {

@@ -25,13 +25,13 @@ public class QueryInfo {
 	
 	public QueryInfo(VectorScore vso, ArrayList<String> queryString) throws IOException {
 		this.vso = vso;
-		this.idUrl = new InvertedIndex("idUrl", "ht1");
-		this.idBodyIndex = new InvertedIndex("idBody", "ht1");
-		this.bodyIdIndex = new InvertedIndex("bodyId", "ht1");
+		this.idUrl = GlobalFile.idUrl();
+		this.idBodyIndex = GlobalFile.idBody();
+		this.bodyIdIndex = GlobalFile.bodyId();
 		//this.urlId = new InvertedIndex("urlId", "ht1");
 		info = (urlInfo)idUrl.getEntryObject(vso.getUrlId());
 		this.queryString = new ArrayList<String>();
-		StopStem stopStem = new StopStem("stopwords.txt");
+		StopStem stopStem = GlobalFile.stopStem();
 		for(String s : queryString) {
 			if(stopStem.isStopWord(s)) continue;
 			this.queryString.add(stopStem.stem(s));

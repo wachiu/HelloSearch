@@ -25,7 +25,12 @@ public class App {
 	private Spider spider;
 	
 	public App() {
-
+		try {
+			GlobalFile.init();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void run() {
@@ -67,6 +72,8 @@ public class App {
 	}
 	
 	public void search(String query) throws IOException {
+		double microseconds;
+		
 		
 		Matcher m = Pattern.compile("\"[a-zA-Z ]+\"").matcher(query);
 		
@@ -81,11 +88,32 @@ public class App {
 		VectorSpace vs = new VectorSpace(al, phases);
 			
 		ArrayList<VectorScore> ss = vs.compute();
-			
+		
+		long start = System.nanoTime();
+		
+		//*//
+		PrintWriter writer = new PrintWriter(System.out);
+		JSONWriter jsonwriter = new JSONWriter(writer).array();
+		
+		for(VectorScore vso:ss)
+			jsonwriter.value(new JSONObject(new QueryInfo(vso, al)));
+		
+		jsonwriter.endArray();
+		
+		writer.flush();
+		//writer.close();
+		/*/
+		
 		JSONArray ja = new JSONArray();
 		for(VectorScore vso:ss)
 			ja.put(new JSONObject(new QueryInfo(vso, al)));
-		System.out.println(ja.toString());
+		//System.out.println(ja.toString());
+		//*/
+		
+		long end = System.nanoTime();
+		
+		microseconds = (end - start) / 1000000000d;
+		//System.out.println(microseconds);
 		
 	}
 	
