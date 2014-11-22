@@ -163,6 +163,13 @@ HelloSearch.prototype = {
 		newResult.find('.result-modified').text(result.lastModified);
 		newResult.find('.result-score').text(parseFloat(result.score).toFixed(2));
 		newResult.find('.result-size').text(parseFloat((result.size)/1024).toFixed(2) + " kb");	
+
+		var wordFreqs = $.parseJSON(result.wordFreqs);
+		newResult.find('.result-frequent').html($(wordFreqs.map(function(v) {
+			v = v.split("=");
+			return '<span>' + v[0] + ' <span class="badge">' + v[1] + '</span></span>';
+		})).get().join(""));
+
 		return newResult;
 	}
 }
