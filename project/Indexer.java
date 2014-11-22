@@ -151,6 +151,24 @@ public class Indexer {
 		}
 	}
 	
+	public ArrayList<String> BodyDocumentText(String body) {
+		body = body.replaceAll("<[^>]*>", "");	//remove all tags
+		
+		//then index body
+		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
+		
+		ArrayList<String> ss = new ArrayList<String>();
+		
+		String text;
+		
+		while(m.find()) {
+			text = m.group(1).toLowerCase();
+			ss.add(text);
+		}
+		
+		return ss;
+	}
+	
 	public Map<String, Integer> BodyWordUniqCount(String id, String body) throws IOException {
 		body = body.replaceAll("<[^>]*>", "");	//remove all tags
 		
