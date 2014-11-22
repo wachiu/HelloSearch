@@ -125,8 +125,8 @@ public class Spider
 	Spider(String url, int pages, Indexer indexer) throws IOException {
 		this.url = url;
 		this.pages = pages;
-		index = new InvertedIndex("idUrl","ht1");
-		urlIdIndex = new InvertedIndex("urlId","ht1");
+		index = GlobalFile.idUrl();
+		urlIdIndex = GlobalFile.urlId();
 		this.indexer = indexer;
 	}
 	

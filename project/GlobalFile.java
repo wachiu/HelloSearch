@@ -6,20 +6,25 @@ public class GlobalFile {
 
 	private static Boolean isInit = false;
 	private static InvertedIndex idUrl;
+	private static InvertedIndex urlId;
 	private static InvertedIndex idBody;
 	private static InvertedIndex bodyId;
 	private static InvertedIndex idTitle;
 	private static InvertedIndex titleId;
 	private static StopStem stopStem;
 	
-	public static void init() throws IOException {
+	public static void init(Boolean invertedIndex) throws IOException {
 		if(GlobalFile.isInit) return;
 		
-		GlobalFile.idUrl = new InvertedIndex("idUrl", "ht1");
-		GlobalFile.idBody = new InvertedIndex("idBody", "ht1");
-		GlobalFile.bodyId = new InvertedIndex("bodyId", "ht1");
-		GlobalFile.idTitle = new InvertedIndex("idTitle", "ht1");
-		GlobalFile.titleId = new InvertedIndex("titleId", "ht1");
+		if(invertedIndex) {
+			GlobalFile.idUrl = new InvertedIndex("idUrl", "ht1");
+			GlobalFile.urlId = new InvertedIndex("urlId","ht1");
+			GlobalFile.idBody = new InvertedIndex("idBody", "ht1");
+			GlobalFile.bodyId = new InvertedIndex("bodyId", "ht1");
+			GlobalFile.idTitle = new InvertedIndex("idTitle", "ht1");
+			GlobalFile.titleId = new InvertedIndex("titleId", "ht1");
+		}
+		
 		GlobalFile.stopStem = new StopStem("stopwords.txt");
 		
 		GlobalFile.isInit = true;
@@ -27,6 +32,10 @@ public class GlobalFile {
 	
 	public static InvertedIndex idUrl() {
 		return GlobalFile.idUrl;
+	}
+	
+	public static InvertedIndex urlId() {
+		return GlobalFile.urlId;
 	}
 	
 	public static InvertedIndex idBody() {
