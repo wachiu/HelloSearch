@@ -4,6 +4,6 @@
 		<div class="thing"></div>
 	</div>
 	<form class="search" method="GET" action="results.php">
-		<input name="query" class="form-control" value="<?=$query_str?>" autocomplete="off">
+		<input name="query" class="form-control" value="" autocomplete="off">
 	</form>
 </div><!-- /.container -->

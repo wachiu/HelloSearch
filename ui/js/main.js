@@ -1,6 +1,7 @@
 var HelloSearch = function(form) {
 	this.form = $(form);
 	this.resultTemplate = $('.result').clone();
+	this.searched = false;
 };
 HelloSearch.prototype = {
 	constructor: HelloSearch,
@@ -14,6 +15,7 @@ HelloSearch.prototype = {
 	},
 	search: function() {
 		var self = this;
+		if(self.searched) $('.result').remove();
 		$.ajax({
 			url: self.form.attr('action'),
 			type: "GET",
@@ -27,13 +29,17 @@ HelloSearch.prototype = {
 		data = JSON.parse(data);
 		var results = data.results;
 		var query_str = data.query_str;
-		var finished_time = data.finished_time;
 		var has_query = data.has_query;
 
+		$('.results-count').text(results.length);
+		$('.results-time').text(data.finished_time);
+		
 		$.each(results, function(index, result) {
 			$('.results').append(self.makeResult(result));
 		});
-		$('.results').slideDown();
+
+		$('.results').fadeIn();
+		this.searched = true;
 	},
 	makeResult: function(result) {
 		var self = this;

@@ -21,7 +21,7 @@
 		<?php include 'templates/searchform.php' ?>
 
 		<div class="container results" style="display:none">
-			<p>Showing <?=count($results)?> results (<?=$finished_time?> seconds)</p>
+			<p>Showing <span class="results-count"></span> results (<span class="results-time"></span> seconds)</p>
 
 			<div class="result row">
 				<div class="col-sm-9">
