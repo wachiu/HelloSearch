@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.TreeMap;
 
 import org.json.JSONArray;
@@ -44,12 +46,19 @@ public class App {
 			e.printStackTrace();
 		}
 		
+		finalize();
+		
+		pagerank();
+	}
+	
+	public void pagerank() {
 		//page rank
 		PageRank pr = new PageRank(0.85, 8);
 		try {
 			pr.compute();
+			pr.finalize();
 		}
-		catch (IOException ioe) {}
+		catch (IOException ioe) { }
 	}
 	
 	public void finalize() {
@@ -59,15 +68,23 @@ public class App {
 	
 	public void search(String query) throws IOException {
 		
-		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.split(" ")));
+		Matcher m = Pattern.compile("\"[a-zA-Z ]+\"").matcher(query);
 		
-		VectorSpace vs = new VectorSpace(al);
+		
+		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.split(" ")));
+		ArrayList<String> phases = new ArrayList<String>();
+		
+		while(m.find()) {
+			phases.add(m.group(1).toLowerCase());
+		}
+		
+		VectorSpace vs = new VectorSpace(al, phases);
 			
 		ArrayList<VectorScore> ss = vs.compute();
 			
 		JSONArray ja = new JSONArray();
 		for(VectorScore vso:ss)
-			ja.put(new JSONObject(new QueryInfo(vso)));
+			ja.put(new JSONObject(new QueryInfo(vso, al)));
 		System.out.println(ja.toString());
 		
 	}
@@ -131,10 +148,24 @@ public class App {
 	}
 	
 	public static void main (String[] args) {
+		if(args.length == 0) return;
 		//*//
 		App app = new App();
 		
-		if(args.length >= 2 && (args[0].equals("query") || args[0].equals("search"))) {
+		//check the action that not require args
+		args[0] = args[0].toLowerCase();
+		if(args[0].equals("index")) {
+			app.run();
+		}
+		//else if(args[0].equals("pagerank")) {
+		//	app.pagerank();
+		//}
+		
+		if(args.length < 2) return;
+		
+		//check the action with args
+		args[1] = args[1].toLowerCase();
+		if(args[0].equals("query") || args[0].equals("search")) {
 			try {
 				app.search(args[1].toLowerCase());
 			} catch (IOException e) {
@@ -142,7 +173,7 @@ public class App {
 				e.printStackTrace();
 			}
 		}
-		else if(args.length >= 2 && args[0].equals("suggest")) {
+		else if(args[0].equals("suggest")) {
 			try {
 				app.suggest(args[1].toLowerCase());
 			} catch (IOException e) {
@@ -150,13 +181,10 @@ public class App {
 				e.printStackTrace();
 			}	
 		}
-		else if(args.length >= 2 && args[0].equals("stem")) {
+		else if(args[0].equals("stem")) {
 			app.stem(args[1].toLowerCase());
 		}
-		else if(args.length == 1 && args[0].equals("index")) {
-			app.run();
-			app.finalize();
-		}
+		
 		/*/
 		App.test();
 		//*/
