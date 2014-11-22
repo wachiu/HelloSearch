@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: project.App
+Class-Path: jdbm-1.0.jar jsoup-1.8.1.jar
