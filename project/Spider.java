@@ -1,10 +1,14 @@
 package project;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Queue;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.TreeMap;
 
 import org.jsoup.Connection;
 import org.jsoup.HttpStatusException;
@@ -19,6 +23,24 @@ import java.io.Serializable;
 import java.net.SocketTimeoutException;
 
 import project.InvertedIndex;
+
+class ValueComparator implements Comparator<String>, Serializable {
+	 
+    Map<String, Integer> map;
+ 
+    public ValueComparator(Map<String, Integer> base) {
+        this.map = base;
+    }
+ 
+    public int compare(String a, String b) {
+        if (map.get(a) >= map.get(b)) {
+            return -1;
+        } else {
+            return 1;
+        } // returning 0 would merge keys 
+    }
+}
+
 
 class urlTemp {
 	String url;
@@ -38,8 +60,9 @@ class urlInfo implements Serializable {
 	public List<Integer> children;
 	public String lastModified;
 	public int size;
-	public LinkedHashSet<String> titleWordIds;
-	public LinkedHashSet<String> bodyWordIds;
+	private LinkedHashSet<String> titleWordIds;
+	private LinkedHashSet<String> bodyWordIds;
+	private TreeMap<String, Integer> bodyWordUniqCount;
 	
 	public urlInfo(String url, int parent) {
 		this.parent = new ArrayList<Integer>();
@@ -54,6 +77,33 @@ class urlInfo implements Serializable {
 	public void addChildren(int id) {
 		if(!children.contains(id) && id != -1) this.children.add(id);
 	}
+	
+	public void setTitleWordIds(LinkedHashSet<String> set) {
+		this.titleWordIds = set;
+	}
+	
+	public void setBodyWordIds(LinkedHashSet<String> set) {
+		this.bodyWordIds = set;
+	}
+	
+	public void setBodyUniqCount(Map<String, Integer> map) {
+		ValueComparator vc =  new ValueComparator(map);
+		bodyWordUniqCount = new TreeMap<String,Integer>(vc);
+		bodyWordUniqCount.putAll(map);
+	}
+	
+	public LinkedHashSet<String> getTitleWordIds() {
+		return this.titleWordIds;
+	}
+	
+	public LinkedHashSet<String> getBodyWordIds() {
+		return this.bodyWordIds;
+	}
+	
+	public TreeMap<String, Integer> getBodyUniqCount() {
+		return this.bodyWordUniqCount;
+	}
+	
 }
 
 public class Spider
@@ -170,8 +220,11 @@ public class Spider
 			LinkedHashSet<String> bodyWordIds = indexer.IndexBody(entryId, doc.body().toString());
 			
 			urlInfo tmp = (urlInfo)index.getEntryObject(entryId);
-			tmp.titleWordIds = titleWordIds;
-			tmp.bodyWordIds = bodyWordIds;
+			tmp.setTitleWordIds(titleWordIds);
+			tmp.setBodyWordIds(bodyWordIds);
+			
+			tmp.setBodyUniqCount(indexer.BodyWordUniqCount(entryId, doc.body().toString()));
+			
 			index.addEntry(entryId, tmp);
 			
 		}
