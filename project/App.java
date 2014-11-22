@@ -21,6 +21,8 @@ public class App {
 	}
 	
 	public void run() {
+		//crawler and indexer
+		
 		indexer = new Indexer();
 		try {
 			spider = new Spider("http://www.cse.ust.hk/~ericzhao/COMP4321/TestPages/testpage.htm", 300, indexer);
@@ -35,6 +37,13 @@ public class App {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//page rank
+		PageRank pr = new PageRank(0.85, 8);
+		try {
+			pr.compute();
+		}
+		catch (IOException ioe) {}
 	}
 	
 	public void finalize() {
@@ -54,58 +63,6 @@ public class App {
 		for(VectorScore vso:ss)
 			ja.put(new JSONObject(new QueryInfo(vso)));
 		System.out.println(ja.toString());
-		
-	}
-	
-	public static void test() {
-		try {
-			InvertedIndex index = new InvertedIndex("idUrl", "ht1");
-			//InvertedIndex index = new InvertedIndex("urlId", "ht1");
-			//InvertedIndex index = new InvertedIndex("titleId", "ht1");
-			//InvertedIndex index = new InvertedIndex("idTitle", "ht1");
-			//InvertedIndex index = new InvertedIndex("bodyId", "ht1");
-			
-			FastIterator iter = index.getIteratorVals();
-			Object obj;
-			Word w;
-			urlInfo u;
-			
-			for(int i = 0; i < 5 && (obj = iter.next()) != null; i++) {
-				//1.
-				System.out.println(obj);
-				u = (urlInfo)obj;
-				System.out.println(u.key + "," + u.url + "," + u.title + "," + u.lastModified + "," + u.size + "," + u.parent + "," + u.children);
-				System.out.println(u.titleWordIds + "," + u.bodyWordIds);
-				
-				//2.
-				//System.out.println(obj);
-
-				//3.
-				//System.out.println(obj);
-				
-				//4.
-				//LinkedList<Posting> p = ((Word)obj).getPosting();
-				//System.out.println(p.get(0).getDocumentId());
-				//System.out.println(p.get(0).getPositions());
-				//System.out.println(p.get(1).getDocumentId());
-				//System.out.println(p.get(1).getPositions());	
-
-				//5.
-				//System.out.println(obj);
-				
-				//6.
-				//LinkedList<Posting> p = ((Word)obj).getPosting();
-				//System.out.println(((Word)obj).getWord());
-				//System.out.println(p.get(0).getDocumentId());
-				//System.out.println(p.get(0).getPositions());
-				//System.out.println(p.get(1).getDocumentId());
-				//System.out.println(p.get(1).getPositions());	
-			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 	}
 	
