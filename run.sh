@@ -24,5 +24,11 @@ then
         cd ..
         chmod 777 executable/*.db
         chmod 777 executable/*.lg
+elif [ "$1" == "suggest" ]
+then
+	cd executable && java -jar app.jar suggest "$2"
+	cd ..
+        chmod 777 executable/*.db
+        chmod 777 executable/*.lg
 fi
 

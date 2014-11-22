@@ -1,5 +1,61 @@
 <?php
 
+class Cache {
+
+	private $query_str;
+	private $query_escaped;
+	private $query_stems;
+
+	public function __construct($query_str) {
+		$this->query_str = $query_str;
+		$this->query_escaped = preg_replace('/[^A-Za-z0-9_\- ]/', '_', $query_str);
+		$this->query_stems = array();
+
+		if($this->allow_cache())
+			$this->stem_words();
+	}
+
+	//escape the filename, only check cached file when the escaped string equal to input string
+	public function allow_cache() {
+		return $this->query_str == $this->query_escaped;
+	}
+
+	public function load_cache() {
+		$files = glob('../cached/*');
+
+		foreach($files as $file) {
+			$file = substr($file, 10);
+			$parts = explode(' ', $file);
+
+			if(count($parts) == count($this->query_stems)) {
+				$match = true;
+				foreach($parts as $part) {
+					if(!in_array($part, $this->query_stems)) {
+						$match = false;
+						break;
+					}
+				}
+				if($match) return file_get_contents('../cached/' . $file);
+			}
+
+		}
+
+		return false;
+	}
+
+	public function save_cache($raw) {
+		if(count($this->query_stems) != 0)
+			file_put_contents('../cached/' . implode(' ', $this->query_stems), $raw);
+	}
+
+	private function stem_words() {
+		$raw = shell_exec('cd ../executable/ && java -jar app.jar stem ' . escapeshellarg($this->query_str));
+		$result = json_decode($raw);
+		$this->query_stems = $result->stems;
+	}
+
+}
+
 class App {
 
 	private $results;
@@ -15,7 +71,22 @@ class App {
 		$this->start_time = microtime(true);
 	}
 
-	public function run() {
+	public function suggest() {
+
+		//check if any input words come in
+		if(isset($_GET['query'])) $this->query_str = $_GET['query'];
+		else return;
+
+		$raw = null;
+
+		//check if jar exists
+		if(file_exists('../executable/app.jar')) $raw = shell_exec('cd ../executable/ && java -jar app.jar suggest ' . escapeshellarg($this->query_str));
+		else return;
+
+		$this->results = json_decode($raw);
+	}
+
+	public function search() {
 
 		//check if any query come in
 		if(isset($_GET['query'])) $this->query_str = $_GET['query'];
@@ -23,11 +94,13 @@ class App {
 
 		$raw = null;
 
+		$cache = new Cache($this->query_str);
 		//check if the result is cached
-		//escape the filename, only check cached file when the escaped string equal to input string
-		$query_str_escaped = preg_replace('/[^A-Za-z0-9_\-]/', '_', $this->query_str);
-		if($this->query_str == $query_str_escaped) 
-			if(file_exists('../cached/' . $query_str_escaped)) $raw = file_get_contents('../cached/' . $query_str_escaped);
+		
+		if($cache->allow_cache()) {
+			$raw = $cache->load_cache();
+			if($raw === false) $raw = null;
+		}
 
 		if($raw === null) {
 			//check if jar exists
@@ -35,8 +108,8 @@ class App {
 			else return;
 
 			//only save into cached when the escaped string equal to input string
-			if($this->query_str == $query_str_escaped && $raw !== null) 
-				file_put_contents('../cached/' . $query_str_escaped, $raw);
+			if($cache->allow_cache()) 
+				$cache->save_cache($raw);
 		}
 
 		$this->results = json_decode($raw);
@@ -70,7 +143,5 @@ class App {
 }
 
 $app = new App;
-
-$app->run();
 
 ?>

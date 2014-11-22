@@ -5,6 +5,7 @@
 include 'layer.php';
 
 //variable exports
+$app->search();
 
 $results = $app->get_results();
 
