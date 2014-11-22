@@ -86,6 +86,17 @@ HelloSearch.prototype = {
 			e.preventDefault();
 			self.search();
 		});
+
+		var query = getParameterByName('query');
+		if(query != "") self.simSearch(query);
+
+		window.onpopstate = function(event) {
+			if(event.state != null) self.simSearch(event.state);
+		};
+	},
+	simSearch: function(query) {
+		this.form.find('input').val(query);
+		this.search();
 	},
 	search: function() {
 		var self = this;
@@ -93,12 +104,14 @@ HelloSearch.prototype = {
 		if(input.val() == "") {
 
 		} else {
+			var query = self.form.find('input').val();
 			$.ajax({
 				url: self.form.attr('action'),
 				type: "GET",
-				data: { query: self.form.find('input').val() },
+				data: { query: query },
 				success: self.showResults.bind(self),
 				beforeSend: function() {
+					window.history.pushState(query, query + " | Hello Search", '?query=' + query);
 					$('.searching').stop(true).fadeIn();
 					$('.results').stop(true).fadeOut();
 				},
@@ -156,3 +169,10 @@ $(document).ready(function() {
 	var hs = new HelloSearch('form.search');
 	hs.init();
 });
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
