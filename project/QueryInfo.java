@@ -141,6 +141,11 @@ public class QueryInfo {
 		}
 		return text;
 	}
+	
+	public int getMatchTerms() {
+		return vso.matchTerms;
+	}
+	
 	/*
 	public String getDocumentText() {
 		ArrayList<String> text = info.getDocumentText();

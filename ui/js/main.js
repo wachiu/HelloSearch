@@ -169,6 +169,7 @@ HelloSearch.prototype = {
 		newResult.find('.result-url').text(result.url).attr('href', result.url);
 		newResult.find('.result-text').html(result.documentText + "...");
 		newResult.find('.result-modified span').text(result.lastModified);
+		newResult.find('.result-item').text(result.matchTerms);
 		newResult.find('.result-score').text(parseFloat(result.score).toFixed(2));
 		newResult.find('.result-size').text(parseFloat((result.size)/1024).toFixed(2) + " kb");	
 

@@ -34,7 +34,7 @@
 			<p>Showing <span class="results-count"></span> results (<span class="results-time"></span> seconds)</p>
 
 			<div class="result row">
-				<div class="col-sm-9">
+				<div class="col-sm-8">
 					<div class="result-header">
 						<a class="result-title" href="#"></a>
 						<a class="result-url" href="#"></a>
@@ -44,8 +44,12 @@
 						<span class="result-text"></span>
 					</div>
 				</div>
-				<div class="col-sm-3">
+				<div class="col-sm-4">
 					<div class="result-stats">
+						<div class="result-stat">
+							<small>Match(es)</small>
+							<span class="result-item">-</span>
+						</div>
 						<div class="result-stat">
 							<small>Score</small>
 							<span class="result-score">-</span>
