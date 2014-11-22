@@ -1,28 +1,52 @@
-$(document).ready(function() {
-	/*
-	var titles = [
-		"I had cereal for breakfast",
-		"This computer is on fire",
-		"The window is broken",
-		"This is a pencil",
-		"Water bottle is big",
-		"My notebook is on fire",
-		"I like my sofa",
-		"This is not a result",
-		"I'm going to eat diner later",
-		"Dinosaurs are cool"
-	]
-	var aresult = $('.result').clone();
-	for(var i = 0; i < 30; i++) {
-		var temp = aresult.clone();
-		var size = Math.ceil(Math.random() * 1000) + 1000;
-		var title = titles[Math.ceil(Math.random() * 10)];
-		temp.find('.result-size').text(size+' kb');
-		temp.find('.result-title').text(title);
-		$('.results').append(temp);
+var HelloSearch = function(form) {
+	this.form = $(form);
+	this.resultTemplate = $('.result').clone();
+};
+HelloSearch.prototype = {
+	constructor: HelloSearch,
+	init: function() {
+		$('.result').remove();
+		var self = this;
+		self.form.submit(function(e) {
+			e.preventDefault();
+			self.search();
+		});
+	},
+	search: function() {
+		var self = this;
+		$.ajax({
+			url: self.form.attr('action'),
+			type: "GET",
+			data: { query: self.form.find('input').val() },
+			success: self.showResults.bind(self)
+		});
+	},
+	showResults: function(data) {
+		var self = this;
+		console.log(data);
+		data = JSON.parse(data);
+		var results = data.results;
+		var query_str = data.query_str;
+		var finished_time = data.finished_time;
+		var has_query = data.has_query;
+
+		$.each(results, function(index, result) {
+			$('.results').append(self.makeResult(result));
+		});
+		$('.results').slideDown();
+	},
+	makeResult: function(result) {
+		var self = this;
+		var newResult = self.resultTemplate.clone();
+		newResult.find('.result-title').text(result.pageTitle);
+		newResult.find('.result-url').text(result.url);
+		newResult.find('.result-modified').text(result.lastModified);
+		newResult.find('.result-score').text(parseFloat(result.score).toFixed(2));
+		newResult.find('.result-size').text(result.size);	
+		return newResult;
 	}
-	*/
-	$('html,body').animate({
-		scrollTop: $(".results").offset().top-50
-	});
+}
+$(document).ready(function() {
+	var hs = new HelloSearch('form.search');
+	hs.init();
 });
