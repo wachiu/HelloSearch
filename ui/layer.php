@@ -23,9 +23,21 @@ class App {
 
 		$raw = null;
 
-		//check if jar exists
-		if(file_exists('../executable/app.jar')) $raw = shell_exec('cd ../executable/ && java -jar app.jar search ' . escapeshellarg($this->query_str));
-		else return;
+		//check if the result is cached
+		//escape the filename, only check cached file when the escaped string equal to input string
+		$query_str_escaped = preg_replace('/[^A-Za-z0-9_\-]/', '_', $this->query_str);
+		if($this->query_str == $query_str_escaped) 
+			if(file_exists('../cached/' . $query_str_escaped)) $raw = file_get_contents('../cached/' . $query_str_escaped);
+
+		if($raw === null) {
+			//check if jar exists
+			if(file_exists('../executable/app.jar')) $raw = shell_exec('cd ../executable/ && java -jar app.jar search ' . escapeshellarg($this->query_str));
+			else return;
+
+			//only save into cached when the escaped string equal to input string
+			if($this->query_str == $query_str_escaped && $raw !== null) 
+				file_put_contents('../cached/' . $query_str_escaped, $raw);
+		}
 
 		$this->results = json_decode($raw);
 
