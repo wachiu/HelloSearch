@@ -27,10 +27,12 @@ public class VectorSpace {
 	private InvertedIndex titleId;
 	private InvertedIndex idBody;
 	private InvertedIndex idTitle;
+	private StopStem stopStem;
 	private ArrayList<VectorScore> similarity;
 	public VectorSpace(ArrayList<String> query) {
 		this.query = query;
 		try {
+			this.stopStem = new StopStem("stopwords.txt");
 			this.bodyId = new InvertedIndex("bodyId", "ht1");
 			this.idBody = new InvertedIndex("idBody", "ht1");
 			this.titleId = new InvertedIndex("titleId", "ht1");
@@ -76,6 +78,10 @@ public class VectorSpace {
 		while(qIter.hasNext()) {
 			String next = qIter.next();
 			
+			if(stopStem.isStopWord(next))
+				continue;
+			else
+				next = stopStem.stem(next);
 			//check if the word exists in bodyId hashtable
 			if(!bodyId.exists(next)) continue;
 			tempWordId = (String)bodyId.getEntryObject(next);
