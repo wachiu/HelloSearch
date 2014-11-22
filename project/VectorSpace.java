@@ -78,13 +78,15 @@ public class VectorSpace {
 		Posting tempPosting;
 		while(qIter.hasNext()) {
 			next = qIter.next();
-			
 			if(stopStem.isStopWord(next))
 				continue;
 			else
 				next = stopStem.stem(next);
 			//check if the word exists in bodyId hashtable
-			if(!bodyId.exists(next)) continue;
+			if(!bodyId.exists(next)) {
+				System.out.print("here I am");
+				continue;
+			}
 			tempWordId = (String)bodyId.getEntryObject(next);
 			
 			//check if the word id exists in the idBody hashtable
@@ -115,7 +117,10 @@ public class VectorSpace {
 			else
 				next = stopStem.stem(next);
 			//check if the word exists in bodyId hashtable
-			if(!titleId.exists(next)) continue;
+			if(!titleId.exists(next)) {
+				System.out.print("here I am");
+				continue;
+			}
 			tempWordId = (String)titleId.getEntryObject(next);
 			
 			//check if the word id exists in the idBody hashtable
@@ -140,5 +145,15 @@ public class VectorSpace {
 		Collections.sort(this.similarity, comparator);
 		return this.similarity;
 	}
-	
+	public static void main (String[] args) throws IOException {
+		ArrayList<String> query = new ArrayList<String>();
+		query.add("hello");
+		VectorSpace test1 = new VectorSpace(query);
+		ArrayList<VectorScore> test2 = test1.compute();;
+		for(VectorScore o:test2) {
+			System.out.print(o.urlId + o.score);
+			System.out.println();
+		}
+		return;
+	}
 }
