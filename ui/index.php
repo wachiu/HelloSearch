@@ -20,6 +20,14 @@
 		</nav>
 		<?php include 'templates/searchform.php' ?>
 
+		<div class="history">
+			<p>History</p>
+			<div class="history-list">
+				<li>Seacas <span>(Nov 11 2014)</span></li>
+			</div>
+			<button class="btn btn-default history-clear">Clear History</button>
+		</div>
+
 		<div class="container results">
 			<p>Showing <span class="results-count"></span> results (<span class="results-time"></span> seconds)</p>
 
