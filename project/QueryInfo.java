@@ -89,4 +89,17 @@ public class QueryInfo {
 		return ja.toString();
 	}
 	
+	/*
+	public String getDocumentText() {
+		ArrayList<String> text = info.getDocumentText();
+		
+		JSONArray ja = new JSONArray();
+		
+		for(String s : text)
+			ja.put(s);
+		
+		return ja.toString();
+	}
+	*/
+	
 }

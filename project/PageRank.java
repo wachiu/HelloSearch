@@ -65,6 +65,11 @@ public class PageRank {
 		}
 	}
 	
+	public void finalize() throws IOException {
+		idPageRankIndex.finalize();
+		idPageRankPrevIndex.finalize();
+	}
+	
 	public void printAll() throws IOException{
 		FastIterator iter = idPageRankIndex.getIteratorKeys();
 		String key;
