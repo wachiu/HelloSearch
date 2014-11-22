@@ -26,11 +26,13 @@ HelloSearch.prototype = {
 				data: { query: self.form.find('input').val() },
 				success: self.showResults.bind(self),
 				beforeSend: function() {
-					$('.result').remove();
-					$('.searching').fadeIn();
+					$('.searching').stop(true).fadeIn();
+					$('.results').stop(true).fadeOut(function() {
+						$('.result').remove();
+					});
 				},
 				complete: function() {
-					$('.searching').fadeOut();
+					$('.searching').stop(true).fadeOut();
 				}
 			});
 		}
@@ -51,11 +53,15 @@ HelloSearch.prototype = {
 		});
 
 		$('body').addClass('searched');
-		$('.container.search').bind(transitionEnd, function() {
-			$(this).unbind(transitionEnd);
-			$('.results').fadeIn();
-		});
-		this.searched = true;
+		if(this.searched) {
+			$('.results').stop(true).fadeIn();
+		} else {
+			$('.container.search').bind(transitionEnd, function() {
+				$(this).unbind(transitionEnd);
+				$('.results').fadeIn();
+			});
+			this.searched = true;
+		}
 	},
 	makeResult: function(result) {
 		var self = this;
