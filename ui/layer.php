@@ -108,7 +108,7 @@ class App {
 			else return;
 
 			//only save into cached when the escaped string equal to input string
-			if($cache->allow_cache()) 
+			if($raw !== null && count($raw) > 0 && $cache->allow_cache()) 
 				$cache->save_cache($raw);
 		}
 

@@ -28,14 +28,16 @@ class VectorScoreComparator implements Comparator<VectorScore> {
 
 public class VectorSpace {
 	private ArrayList<String> query;
+	private ArrayList<String> phase;
 	private InvertedIndex bodyId;
 	private InvertedIndex titleId;
 	private InvertedIndex idBody;
 	private InvertedIndex idTitle;
 	private StopStem stopStem;
 	private ArrayList<VectorScore> similarity;
-	public VectorSpace(ArrayList<String> query) {
+	public VectorSpace(ArrayList<String> query, ArrayList<String> phase) {
 		this.query = query;
+		this.phase = phase;
 		try {
 			this.stopStem = new StopStem("stopwords.txt");
 			this.bodyId = new InvertedIndex("bodyId", "ht1");
