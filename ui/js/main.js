@@ -1,3 +1,4 @@
+var transitionEnd = 'transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd';
 var HelloSearch = function(form) {
 	this.form = $(form);
 	this.resultTemplate = $('.result').clone();
@@ -15,13 +16,24 @@ HelloSearch.prototype = {
 	},
 	search: function() {
 		var self = this;
-		if(self.searched) $('.result').remove();
-		$.ajax({
-			url: self.form.attr('action'),
-			type: "GET",
-			data: { query: self.form.find('input').val() },
-			success: self.showResults.bind(self)
-		});
+		var input = self.form.find('input');
+		if(input.val() == "") {
+
+		} else {
+			$.ajax({
+				url: self.form.attr('action'),
+				type: "GET",
+				data: { query: self.form.find('input').val() },
+				success: self.showResults.bind(self),
+				beforeSend: function() {
+					$('.result').remove();
+					$('.searching').fadeIn();
+				},
+				complete: function() {
+					$('.searching').fadeOut();
+				}
+			});
+		}
 	},
 	showResults: function(data) {
 		var self = this;
@@ -38,7 +50,11 @@ HelloSearch.prototype = {
 			$('.results').append(self.makeResult(result));
 		});
 
-		$('.results').fadeIn();
+		$('body').addClass('searched');
+		$('.container.search').bind(transitionEnd, function() {
+			$(this).unbind(transitionEnd);
+			$('.results').fadeIn();
+		});
 		this.searched = true;
 	},
 	makeResult: function(result) {
@@ -52,6 +68,7 @@ HelloSearch.prototype = {
 		return newResult;
 	}
 }
+
 $(document).ready(function() {
 	var hs = new HelloSearch('form.search');
 	hs.init();

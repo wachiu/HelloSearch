@@ -68,6 +68,30 @@ nav ul {
 	top:80px;
 	max-width:500px;
 	padding:100px 60px;
+	transition:all 0.4s ease-out;
+}
+
+.searched .container.search {
+	top:20px;
+	max-width:100%;
+	padding:30px 60px 60px;
+}
+
+.search-input {
+	display:relative;
+}
+
+.searching {
+	display:none;
+	opacity:0.8;
+	width:30px;
+	height:30px;
+	position:absolute;
+	margin-top:12px;
+	right:72px;
+	z-index:2;
+	background:url('../images/searching.gif') no-repeat;
+	background-size:100%;
 }
 
 form.search input {
@@ -77,8 +101,9 @@ form.search input {
 }
 
 .container.results {
-	margin-top:200px;
+	margin-top:60px;
 	padding:30px;
+	display:none;
 }
 
 .result {
@@ -140,4 +165,9 @@ form.search input {
 
 footer {
 	margin:20px 0;
+	display:none;
+}
+
+.searched footer {
+	display:block;
 }

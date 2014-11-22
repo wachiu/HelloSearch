@@ -20,28 +20,28 @@
 		</nav>
 		<?php include 'templates/searchform.php' ?>
 
-		<div class="container results" style="display:none">
+		<div class="container results">
 			<p>Showing <span class="results-count"></span> results (<span class="results-time"></span> seconds)</p>
 
 			<div class="result row">
 				<div class="col-sm-9">
 					<div class="result-header">
-						<a class="result-title" href="#">This is the page's title</a>
-						<a class="result-url" href="#">http://theactualurl.com/</a>
+						<a class="result-title" href="#"></a>
+						<a class="result-url" href="#"></a>
 					</div>
 					<div class="result-body">
-						<span>Last Modified: <span class="result-modified">November 10 2014 02:33:18</span></span>
+						<span>Last Modified: <span class="result-modified"></span></span>
 					</div>
 				</div>
 				<div class="col-sm-3">
 					<div class="result-stats">
 						<div class="result-stat">
 							<small>Score</small>
-							<span class="result-score">4.02</span>
+							<span class="result-score">-</span>
 						</div>
 						<div class="result-stat">
 							<small>Size</small>
-							<span class="result-size">1357 kb</span>
+							<span class="result-size">- kb</span>
 						</div>
 					</div>
 				</div>
@@ -57,7 +57,9 @@
 			</div>
 		</div>
 
-		
+		<!-- <footer class="container">
+			&copy; Hello Search 2014.
+		</footer> -->
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="js/bootstrap.js"></script>

@@ -4,6 +4,9 @@
 		<div class="thing"></div>
 	</div>
 	<form class="search" method="GET" action="results.php">
-		<input name="query" class="form-control" value="" autocomplete="off">
+		<div class="search-input">
+			<div class="searching"></div>
+			<input name="query" class="form-control" value="" autocomplete="off">
+		</div>
 	</form>
 </div><!-- /.container -->
