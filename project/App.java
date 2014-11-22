@@ -43,6 +43,10 @@ public class App {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		finalize();
+		
+		pagerank();
 	}
 	
 	public void pagerank() {
@@ -70,7 +74,7 @@ public class App {
 			
 		JSONArray ja = new JSONArray();
 		for(VectorScore vso:ss)
-			ja.put(new JSONObject(new QueryInfo(vso)));
+			ja.put(new JSONObject(new QueryInfo(vso, al)));
 		System.out.println(ja.toString());
 		
 	}
@@ -142,11 +146,10 @@ public class App {
 		args[0] = args[0].toLowerCase();
 		if(args[0].equals("index")) {
 			app.run();
-			app.finalize();
 		}
-		else if(args[0].equals("pagerank")) {
-			app.pagerank();
-		}
+		//else if(args[0].equals("pagerank")) {
+		//	app.pagerank();
+		//}
 		
 		if(args.length < 2) return;
 		

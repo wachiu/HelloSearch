@@ -22,7 +22,7 @@ public class Ranking {
 		String key;
 		while((key = (String)iter.next()) != null) {
 			double r = (Double)idPageRankIndex.getEntryObject(key);
-			System.out.println("#" + key + ": " + r);
+			//System.out.println("#" + key + ": " + r);
 		}
 		
 //		for(VectorScore o:vectorSpace) {

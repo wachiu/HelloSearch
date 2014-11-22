@@ -60,8 +60,12 @@ class Word implements Serializable {
 		return this.word;
 	}
 	
-	public LinkedList<Posting> getPosting() {
+	public LinkedList<Posting> getAllPostings() {
 		return this.lists;
+	}
+	
+	public Posting getPosting(String documentId) {
+		return listContains(documentId);
 	}
 	
 	public int df() {
@@ -118,6 +122,10 @@ class Posting implements Serializable {
 			p += i + ", ";
 		}
 		return p;
+	}
+	
+	public LinkedList<Integer> getPositionsByList() {
+		return this.positions;
 	}
 	
 	public int tf() {
@@ -202,6 +210,7 @@ public class Indexer {
 		
 		int position = 0;
 		while(m.find()) {
+			++position;
 		    String text = m.group(1).toLowerCase();
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
@@ -210,7 +219,7 @@ public class Indexer {
 		    	Word w;
 				if(!titleIdIndex.exists(text)) {
 					w = new Word(text);
-					w.addPosting(id, ++position);
+					w.addPosting(id, position);
 					titleIdIndex.addEntry(text, "" + (++titlewordId));
 					idTitleIndex.addEntry("" + titlewordId, w);
 					ss.add("" + titlewordId);
@@ -218,7 +227,7 @@ public class Indexer {
 				else {
 					objid = (String)titleIdIndex.getEntryObject(text);
 					w = (Word)idTitleIndex.getEntryObject(objid);
-					w.addPosting(id, ++position);
+					w.addPosting(id, position);
 					idTitleIndex.addEntry(objid, w);
 					ss.add(objid);
 				}
@@ -242,8 +251,9 @@ public class Indexer {
 		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(body);
 		String objid = "";
 		
-		int position = 0;
+		int position = -1;
 		while(m.find()) {
+			++position;
 		    String text = m.group(1).toLowerCase();
 		    if(stopStem.isStopWord(text)) continue;
 		    else text = stopStem.stem(text);
@@ -253,7 +263,7 @@ public class Indexer {
 		    	Word w;
 				if(!bodyIdIndex.exists(text)) {
 					w = new Word(text);
-					w.addPosting(id, ++position);
+					w.addPosting(id, position);
 					bodyIdIndex.addEntry(text, "" + (++bodywordId));
 					idBodyIndex.addEntry("" + bodywordId, w);
 					ss.add("" + titlewordId);
@@ -261,7 +271,7 @@ public class Indexer {
 				else {
 					objid = (String)bodyIdIndex.getEntryObject(text);
 					w = (Word)idBodyIndex.getEntryObject(objid);
-					w.addPosting(id, ++position);
+					w.addPosting(id, position);
 					idBodyIndex.addEntry(objid, w);
 					ss.add(objid);
 				}

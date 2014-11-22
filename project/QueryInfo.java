@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,13 +20,22 @@ public class QueryInfo {
 	//private InvertedIndex urlId;
 	private urlInfo info;
 	private InvertedIndex idBodyIndex;
+	private ArrayList<String> queryString;
+	private InvertedIndex bodyIdIndex;
 	
-	public QueryInfo(VectorScore vso) throws IOException {
+	public QueryInfo(VectorScore vso, ArrayList<String> queryString) throws IOException {
 		this.vso = vso;
 		this.idUrl = new InvertedIndex("idUrl", "ht1");
 		this.idBodyIndex = new InvertedIndex("idBody", "ht1");
+		this.bodyIdIndex = new InvertedIndex("bodyId", "ht1");
 		//this.urlId = new InvertedIndex("urlId", "ht1");
 		info = (urlInfo)idUrl.getEntryObject(vso.getUrlId());
+		this.queryString = new ArrayList<String>();
+		StopStem stopStem = new StopStem("stopwords.txt");
+		for(String s : queryString) {
+			if(stopStem.isStopWord(s)) continue;
+			this.queryString.add(stopStem.stem(s));
+		}
 	}
 	
 	public double getScore() {
@@ -89,6 +99,32 @@ public class QueryInfo {
 		return ja.toString();
 	}
 	
+	public String getDocumentText() throws IOException {
+		if(queryString.size() == 0) return "";
+		
+		String word = queryString.get(0);
+		Word w = (Word)this.idBodyIndex.getEntryObject(
+			//id
+			(String)this.bodyIdIndex.getEntryObject(word)
+		);
+		LinkedList<Integer> positions = w.getPosting(this.getUrlId()).getPositionsByList();
+		ArrayList<String> documentText = info.getDocumentText();
+		String text = "";
+		int firstposition = positions.getFirst();
+		
+		for(int i = firstposition - 10; i < firstposition + 10; i++) {
+			if(0 <= i && i < documentText.size()) {
+				if(i == firstposition) {
+					text += "<b>" + documentText.get(i) + "</b> ";
+				}
+				else {
+					text += documentText.get(i) + " ";
+				}
+			}
+		}
+		
+		return text;
+	}
 	/*
 	public String getDocumentText() {
 		ArrayList<String> text = info.getDocumentText();

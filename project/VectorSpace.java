@@ -96,7 +96,7 @@ public class VectorSpace {
 			tempWord = (Word)idBody.getEntryObject(tempWordId);
 			
 			
-			tempList = tempWord.getPosting();
+			tempList = tempWord.getAllPostings();
 			
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
@@ -129,7 +129,7 @@ public class VectorSpace {
 			tempWord = (Word)idTitle.getEntryObject(tempWordId);
 			
 			
-			tempList = tempWord.getPosting();
+			tempList = tempWord.getAllPostings();
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
