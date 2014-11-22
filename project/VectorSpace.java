@@ -71,12 +71,13 @@ public class VectorSpace {
 		String tempUrlId;
 		double tempWeight;
 		int maxTf;
+		String next;
 		LinkedList<Posting> tempList;
 		ListIterator<Posting> iter;
 		ListIterator<String> qIter = query.listIterator();
 		Posting tempPosting;
 		while(qIter.hasNext()) {
-			String next = qIter.next();
+			next = qIter.next();
 			
 			if(stopStem.isStopWord(next))
 				continue;
@@ -107,8 +108,12 @@ public class VectorSpace {
 		
 		qIter = query.listIterator();
 		while(qIter.hasNext()) {
-			String next = qIter.next();
+			next = qIter.next();
 			
+			if(stopStem.isStopWord(next))
+				continue;
+			else
+				next = stopStem.stem(next);
 			//check if the word exists in bodyId hashtable
 			if(!titleId.exists(next)) continue;
 			tempWordId = (String)titleId.getEntryObject(next);
