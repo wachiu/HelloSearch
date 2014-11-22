@@ -14,7 +14,7 @@ $finished_time = $app->get_finished_time();
 
 $has_query = $app->has_query();
 
-if(!$app->is_ajax) {
+if($app->is_ajax()) {
 	$return = array(
 		'results' => $results,
 		'query_str' => $query_str,
