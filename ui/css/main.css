@@ -51,6 +51,10 @@ nav ul li {
 	padding:10px;
 }
 
+nav ul li a:hover {
+	text-decoration:none;
+}
+
 nav ul {
 	padding:0;
 	border-bottom:1px #e5e5e5 solid;
@@ -101,7 +105,7 @@ form.search input {
 }
 
 .container.results {
-	margin-top:60px;
+	margin:60px auto;
 	padding:30px;
 	display:none;
 }
@@ -170,4 +174,33 @@ footer {
 
 .searched footer {
 	display:block;
+}
+
+
+.history {
+	display:none;
+	position:absolute;
+	top:40px;
+	left:50%;
+	margin-left:-5px;
+	width:400px;
+	padding:30px;
+	background:white;
+	border:1px solid #e5e5e5;
+	box-shadow:0 2px 3px rgba(0,0,0,0.1);
+}
+
+.history-list {
+	max-height:200px;
+	overflow:auto;
+	margin-bottom:10px;
+}
+
+.history-query {
+	font-size:1.4em;
+}
+
+.history-date {
+	font-size:0.9em;
+	color:#999;
 }

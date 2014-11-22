@@ -15,10 +15,20 @@
 		<nav>
 			<ul>
 				<li class="active"><a href="#">Search</a></li>
-				<li><a href="#">History</a></li>
+				<li class="his"><a href="#">History</a></li>
 			</ul>
 		</nav>
 		<?php include 'templates/searchform.php' ?>
+
+		<div class="history">
+			<div class="history-list">
+				<div class="history-item">
+					<div class="history-query"></div>
+					<div class="history-date"></div>
+				</div>
+			</div>
+			<button class="btn btn-default history-clear">Clear History</button>
+		</div>
 
 		<div class="container results">
 			<p>Showing <span class="results-count"></span> results (<span class="results-time"></span> seconds)</p>

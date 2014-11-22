@@ -2,3 +2,6 @@
 *.lg
 *.db
 .DS_Store
+app.jar
+cached/*
+executable/app.jar

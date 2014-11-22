@@ -1,8 +1,10 @@
 package project;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -58,6 +60,30 @@ public class QueryInfo {
 		for(Entry<String, Integer> e : map.entrySet()) {
 			ja.put(e);
 			if(i++ > 4) break;
+		}
+		
+		return ja.toString();
+	}
+	
+	public String getChildrenLinks() throws IOException {
+		List<Integer> children = info.children;
+		
+		JSONArray ja = new JSONArray();
+		
+		for(Integer id : children) {
+			ja.put(((urlInfo)idUrl.getEntryObject(id + "")).url);
+		}
+		
+		return ja.toString();
+	}
+	
+	public String getParentLinks() throws IOException {
+		List<Integer> parent = info.parent;
+		
+		JSONArray ja = new JSONArray();
+		
+		for(Integer id : parent) {
+			ja.put(((urlInfo)idUrl.getEntryObject(id + "")).url);
 		}
 		
 		return ja.toString();
