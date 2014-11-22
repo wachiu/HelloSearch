@@ -99,6 +99,9 @@ HelloSearch.prototype = {
 		$('body').on('click', '.find-similar', function() {
 			self.simSearch($(this).data('simquery'));
 		});
+		$('body').on('click', '.child-links, .parent-links', function(e) {
+			e.preventDefault();
+		});
 	},
 	simSearch: function(query) {
 		this.form.find('input').val(query);
