@@ -20,17 +20,6 @@ public class Ranking {
 		
 		FastIterator iter = idPageRankIndex.getIteratorKeys();
 		String key;
-		while((key = (String)iter.next()) != null) {
-			double r = (Double)idPageRankIndex.getEntryObject(key);
-			//System.out.println("#" + key + ": " + r);
-		}
-		
-//		for(VectorScore o:vectorSpace) {
-//			System.out.print((Double)idPageRankIndex.getEntryObject(o.urlId));
-//			System.out.println();
-//			tempScore = o.score * vectorSpaceWeight + (Double)idPageRankIndex.getEntryObject(o.urlId) * (1-vectorSpaceWeight);
-//			o.score = tempScore;
-//		}
 		return this.vectorSpace;
 	}
 }

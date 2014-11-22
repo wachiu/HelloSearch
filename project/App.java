@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.TreeMap;
 
 import org.json.JSONArray;
@@ -66,9 +68,17 @@ public class App {
 	
 	public void search(String query) throws IOException {
 		
-		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.split(" ")));
+		Matcher m = Pattern.compile("\"[a-zA-Z ]+\"").matcher(query);
 		
-		VectorSpace vs = new VectorSpace(al);
+		
+		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.split(" ")));
+		ArrayList<String> phases = new ArrayList<String>();
+		
+		while(m.find()) {
+			phases.add(m.group(1).toLowerCase());
+		}
+		
+		VectorSpace vs = new VectorSpace(al, phases);
 			
 		ArrayList<VectorScore> ss = vs.compute();
 			
