@@ -101,7 +101,6 @@ public class VectorSpace {
 		String next;
 		LinkedList<Posting> tempList;
 		ListIterator<Posting> iter;
-		//ListIterator<String> qIter = query.listIterator();
 		Posting tempPosting;
 		String[] tempPhase;
 		String[] tempStemPhase;
@@ -136,8 +135,7 @@ public class VectorSpace {
 				continue;
 			}
 			tempWord = (Word)idBody.getEntryObject(tempWordId);
-//			System.out.print(tempWord.getWord());
-//			System.out.println();
+
 			tempList = tempWord.getAllPostings();
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
@@ -145,8 +143,6 @@ public class VectorSpace {
 				tempUrlInfo = (urlInfo)idUrl.getEntryObject(tempPosting.getDocumentId());
 				for(int i =0;i < tempPosting.getPositionsByList().size();i++) {
 					for(int j =1;j< tempPhase.length;j++) {
-//						System.out.print((tempPosting.getPositionsByList().get(i)+j) + " "+tempUrlInfo.getDocumentText().size());
-//						System.out.println();
 						if((tempPosting.getPositionsByList().get(i)+j) < tempUrlInfo.getDocumentText().size()) {
 							if(!tempPhase[j].equals(tempUrlInfo.getDocumentText().get(tempPosting.getPositionsByList().get(i)+j))) {
 								checker = false;
@@ -174,8 +170,7 @@ public class VectorSpace {
 				continue;
 			}
 			tempWord = (Word)idTitle.getEntryObject(tempWordId);
-//			System.out.print(tempWord.getWord());
-//			System.out.println();
+
 			tempList = tempWord.getAllPostings();
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
@@ -193,8 +188,6 @@ public class VectorSpace {
 							
 					}
 					if(checker) {
-						System.out.print(tempPosting.getDocumentId());
-						System.out.println();
 						filter.add(tempPosting.getDocumentId());
 					}
 					else
