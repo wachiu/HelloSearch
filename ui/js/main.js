@@ -106,6 +106,8 @@ HelloHistory.prototype = {
 				query: query
 			}];
 		} else {
+			if(storedHistory[Object.keys(storedHistory)[Object.keys(storedHistory).length - 1]].query == query)
+				storedHistory.pop();
 			storedHistory.push({
 				searchDate: Date.now(),
 				query: query
@@ -152,6 +154,9 @@ HelloSearch.prototype = {
 		});
 		$('body').on('click', '.child-links, .parent-links', function(e) {
 			e.preventDefault();
+		});
+		$('body').on('click', '.history-query', function() {
+			self.simSearch($(this).text());
 		});
 	},
 	simSearch: function(query) {
