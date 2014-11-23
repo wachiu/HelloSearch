@@ -2,11 +2,12 @@ package project;
 
 import java.io.IOException;
 import jdbm.helper.FastIterator;
+import java.util.HashMap;
 
 public class PageRank {
 	private InvertedIndex idUrlIndex;
 	private InvertedIndex idPageRankIndex;
-	private InvertedIndex idPageRankPrevIndex;
+	private HashMap<String,Double> idPageRankPrevIndex;
 	private double d;
 	private int iterations;
 	
@@ -16,7 +17,8 @@ public class PageRank {
 			this.iterations = iterations;
 			this.idUrlIndex = new InvertedIndex("idUrl", "ht1");
 			this.idPageRankIndex = new InvertedIndex("idPageRank", "ht1");
-			this.idPageRankPrevIndex = new InvertedIndex("idPageRankPrev", "ht1");
+//			this.idPageRankPrevIndex = new InvertedIndex("idPageRankPrev", "ht1");
+			this.idPageRankPrevIndex = new HashMap<String,Double>();
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace ();
@@ -42,7 +44,7 @@ public class PageRank {
 				for(int T: url.parent) {
 					if(T == Integer.parseInt(url.key)) continue;
 					urlInfo infoT = (urlInfo)idUrlIndex.getEntryObject(Integer.toString(T));
-					double pageRankOfT = (Double)idPageRankPrevIndex.getEntryObject(Integer.toString(T));
+					double pageRankOfT = (Double)idPageRankPrevIndex.get(Integer.toString(T));
 					double numOfTChildren = infoT.children.size();
 					if(infoT.children.contains(T))
 						numOfTChildren = infoT.children.size() - 1;
@@ -61,13 +63,12 @@ public class PageRank {
 		FastIterator iter = idPageRankIndex.getIteratorKeys();
 		String key;
 		while((key=(String)iter.next()) != null) {
-			idPageRankPrevIndex.addEntry(key,idPageRankIndex.getEntryObject(key));
+			idPageRankPrevIndex.put(key,(Double)idPageRankIndex.getEntryObject(key));
 		}
 	}
 	
 	public void finalize() throws IOException {
 		idPageRankIndex.finalize();
-		idPageRankPrevIndex.finalize();
 	}
 	
 	public void printAll() throws IOException{
