@@ -171,7 +171,7 @@ HelloSearch.prototype = {
 		newResult.find('.result-modified span').text(result.lastModified);
 		newResult.find('.result-item').text(result.matchTerms);
 		newResult.find('.result-score').text(parseFloat(result.score).toFixed(2));
-		newResult.find('.result-size').text(parseFloat((result.size)/1024).toFixed(2) + " kb");	
+		newResult.find('.result-size').text(parseFloat((result.size)/1024).toFixed(2) + " KB");	
 
 		var freqJoin = "";
 		var wordFreqs = $.parseJSON(result.wordFreqs);
@@ -184,31 +184,20 @@ HelloSearch.prototype = {
 		newResult.find('.find-similar').attr('data-simquery', freqJoin);
 
 		var childLinks = "";
-		var parentLinks = "";
-
-
 		$.each($.parseJSON(result.childrenLinks), function(index, value) {
 			childLinks += "<a href='" + value + "'>" + value + "</a><br>";
 		});
 		if(childLinks == "") childLinks = "No child links."
-
 		newResult.find('.child-links').popover({
-			html:true,
-			placement:'left',
-			// container:'.results',
-			content:childLinks
+			html:true, placement:'left', content:childLinks
 		});
-
+		var parentLinks = "";
 		$.each($.parseJSON(result.parentLinks), function(index, value) {
 			parentLinks += "<a href='" + value + "'>" + value + "</a><br>";
 		});
 		if(parentLinks == "") parentLinks = "No parent links."
-
 		newResult.find('.parent-links').popover({
-			html:true,
-			placement:'left',
-			// container:'.results',
-			content:parentLinks
+			html:true, placement:'left', content:parentLinks
 		});
 		return newResult;
 	}

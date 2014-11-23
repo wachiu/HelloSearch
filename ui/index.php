@@ -38,7 +38,8 @@
 					<div class="result-header">
 						<a class="result-title" href="#"></a>
 						<a class="result-url" href="#"></a>
-						<span class="result-modified">Last Modified: <span></span></span>
+						<span class="result-modified">Last Modified: <span></span>,</span>
+						<span>Size: <span class="result-size">- KB</span></span>
 					</div>
 					<div class="result-body">
 						<span class="result-text"></span>
@@ -54,10 +55,10 @@
 							<small>Score</small>
 							<span class="result-score">-</span>
 						</div>
-						<div class="result-stat">
+						<!-- <div class="result-stat">
 							<small>Size</small>
 							<span class="result-size">- kb</span>
-						</div>
+						</div> -->
 					</div>
 				</div>
 				<div class="col-sm-12">

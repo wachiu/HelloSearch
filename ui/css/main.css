@@ -143,7 +143,7 @@ form.search input {
 	margin-bottom:8px;
 }
 
-.result-modified {
+.result-header > span {
 	font-size:0.9em;
 	font-weight:100;
 }
