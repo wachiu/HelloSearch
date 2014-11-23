@@ -255,6 +255,25 @@ HelloSearch.prototype = {
 		newResult.find('.parent-links').popover({
 			html:true, placement:'left', content:parentLinks
 		});
+		newResult.find('.parent-links').click(function() {
+			var id = result.urlId;
+			var that = $(this);
+			if($(this).data('fetched') != 'true') {
+				$.ajax({
+					url: "suggest.php",
+					type: "GET",
+					data: { query: id },
+					success: function(data) {
+						var data = $.parseJSON(data);
+						if(that.data('bs.popover')) {
+						    that.data('bs.popover').options.content = data + "test";
+						    that.data('fetched', 'true');
+						    that.popover('show');
+						}
+					},
+				});
+			}
+		});
 		return newResult;
 	}
 }
