@@ -240,7 +240,7 @@ HelloSearch.prototype = {
 		newResult.find('.find-similar').attr('data-simquery', freqJoin);
 
 		newResult.find('.parent-links, .child-links').popover({
-			html:true, placement:'left', content:"<img src='../images/searching.gif'>"
+			html:true, placement:'left', content:"<img src='images/searching.gif'>"
 		});
 
 		newResult.find('.parent-links, .child-links').click(function() {
