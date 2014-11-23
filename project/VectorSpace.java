@@ -262,6 +262,11 @@ public class VectorSpace {
 		Collections.sort(this.similarity, comparator);
 		Ranking merge = new Ranking(this.similarity);
 		this.similarity = merge.compute();
+		
+		for(int i = this.similarity.size() - 1;i >= 50; i--) {
+			this.similarity.remove(this.similarity.get(i));
+		}
+			
 //		for(VectorScore o : this.similarity) {
 //			System.out.print(o.urlId + " " + o.score);
 //			System.out.println();
