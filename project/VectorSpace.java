@@ -143,10 +143,16 @@ public class VectorSpace {
 				tempUrlInfo = (urlInfo)idUrl.getEntryObject(tempPosting.getDocumentId());
 				for(int i =0;i < tempPosting.getPositionsByList().size();i++) {
 					for(int j =1;j< tempPhase.length;j++) {
-//						System.out.print(tempPhase[j]);
+//						System.out.print((tempPosting.getPositionsByList().get(i)+j) + " "+tempUrlInfo.getDocumentText().size());
 //						System.out.println();
-						if(!tempPhase[j].equals(tempUrlInfo.getDocumentText().get(tempPosting.getPositionsByList().get(i)+j)))
+						if((tempPosting.getPositionsByList().get(i)+j) < tempUrlInfo.getDocumentText().size()) {
+							if(!tempPhase[j].equals(tempUrlInfo.getDocumentText().get(tempPosting.getPositionsByList().get(i)+j))) {
+								checker = false;
+							}
+						}
+						else
 							checker = false;
+							
 					}
 					if(checker) {
 						filter.add(tempPosting.getDocumentId());
@@ -189,7 +195,7 @@ public class VectorSpace {
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
-				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
+				tempWeight = (0.5+0.5*(double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10(1 + (double)(300.00/tempWord.df()))/Math.log10(2.00));
 				if(checkSimilarity(tempPosting.getDocumentId())) {
 					if(useFilter) {
 						if(checkFilter(tempPosting.getDocumentId()))
@@ -232,7 +238,7 @@ public class VectorSpace {
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
-				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
+				tempWeight = (0.5 + 0.5*(double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(1 + 300.00/tempWord.df()))/Math.log10(2.00));
 				if(checkSimilarity(tempPosting.getDocumentId())) {
 					if(useFilter) {
 						if(checkFilter(tempPosting.getDocumentId()))
