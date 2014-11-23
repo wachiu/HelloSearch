@@ -223,6 +223,7 @@ footer {
 
 .history-query {
 	font-size:1.4em;
+	cursor:pointer;
 }
 
 .history-date {
