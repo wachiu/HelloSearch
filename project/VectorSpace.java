@@ -76,13 +76,54 @@ public class VectorSpace {
 	public ArrayList<VectorScore>  compute() throws IOException {
 		String tempWordId;
 		Word tempWord;
-		String tempUrlId;
+		//String tempUrlId;
 		double tempWeight;
 		String next;
 		LinkedList<Posting> tempList;
 		ListIterator<Posting> iter;
-		ListIterator<String> qIter = query.listIterator();
+		//ListIterator<String> qIter = query.listIterator();
 		Posting tempPosting;
+		String tempPhase[];
+		ArrayList<String> filter = new ArrayList<String>();
+		ListIterator<String> qIter = phase.listIterator();
+		Boolean checker = false;
+		InvertedIndex idUrl = GlobalFile.idUrl();
+		while(qIter.hasNext()) {
+			next = qIter.next();
+			tempPhase = next.split(" ");
+			for(int i =0;i<tempPhase.length;i++) {
+				tempPhase[i] = stopStem.stem(tempPhase[i]);
+			}
+			//check if the word exists in bodyId hashtable
+			if(!bodyId.exists(tempPhase[0]))
+				continue;
+			tempWordId = (String)bodyId.getEntryObject(tempPhase[0]);
+			//check if the word id exists in the idBody hashtable
+			if(!idBody.exists(tempPhase[0]))
+				continue;
+			tempWord = (Word)idBody.getEntryObject(tempWordId);
+			tempList = tempWord.getAllPostings();
+			iter = tempList.listIterator();
+			while(iter.hasNext()) {
+				tempPosting = iter.next();
+				for(int i =0;i < tempPosting.getPositionsByList().size();i++) {
+					for(int j =1;j< tempPhase.length();j++) {
+						if(tempPhase[j] == )
+					}
+					if(checker) {
+						
+					}
+				}
+			}
+			
+			
+			
+			
+		}
+		
+		
+		
+		qIter = query.listIterator();
 		while(qIter.hasNext()) {
 			next = qIter.next();
 			if(stopStem.isStopWord(next))
@@ -94,7 +135,8 @@ public class VectorSpace {
 				continue;
 			tempWordId = (String)bodyId.getEntryObject(next);
 			//check if the word id exists in the idBody hashtable
-			if(!idBody.exists(tempWordId)) continue;
+			if(!idBody.exists(tempWordId))
+				continue;
 			tempWord = (Word)idBody.getEntryObject(tempWordId);
 			
 			
