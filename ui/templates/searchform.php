@@ -6,7 +6,7 @@
 	<form class="search" method="GET" action="results.php">
 		<div class="search-input">
 			<div class="searching"></div>
-			<input name="query" class="form-control" value="" autocomplete="off">
+			<input name="query" class="form-control" value="" autocomplete="off" autofocus>
 		</div>
 		<div class="autocomplete">
 		</div>

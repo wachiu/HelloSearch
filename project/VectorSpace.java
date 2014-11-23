@@ -40,6 +40,7 @@ public class VectorSpace {
 	private InvertedIndex idTitle;
 	private StopStem stopStem;
 	private ArrayList<VectorScore> similarity;
+	private ArrayList<String> filter;
 	public VectorSpace(ArrayList<String> query, ArrayList<String> phase) {
 		this.query = query;
 		this.phase = phase;
@@ -49,6 +50,7 @@ public class VectorSpace {
 		this.titleId = GlobalFile.titleId();
 		this.idTitle = GlobalFile.idTitle();
 		this.similarity = new ArrayList<VectorScore>();
+		this.filter = new ArrayList<String>();
 	}
 	private Boolean checkSimilarity(String check) {
 		VectorScore temp;
@@ -77,17 +79,69 @@ public class VectorSpace {
 		}
 	}
 	
+	private Boolean checkFilter(String check) {
+		String temp;
+		for(int i = 0; i < filter.size();i++) {
+			temp = filter.get(i);
+			if(temp.equals(check)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	
 	public ArrayList<VectorScore>  compute() throws IOException {
 		String tempWordId;
 		Word tempWord;
-		String tempUrlId;
+		//String tempUrlId;
 		double tempWeight;
 		String next;
 		LinkedList<Posting> tempList;
 		ListIterator<Posting> iter;
-		ListIterator<String> qIter = query.listIterator();
+		//ListIterator<String> qIter = query.listIterator();
 		Posting tempPosting;
+		String[] tempPhase;
+		ListIterator<String> qIter = phase.listIterator();
+		Boolean checker = true;
+		InvertedIndex idUrl = GlobalFile.idUrl();
+		urlInfo tempUrlInfo;
+		
+		//////////////////////////////////////////////////////////////////////////////////////
+		while(qIter.hasNext()) {//loop Phase
+			next = qIter.next();
+			tempPhase = next.split(" ");
+			for(int i =0;i<tempPhase.length;i++) {//stem all phases
+				tempPhase[i] = stopStem.stem(tempPhase[i]);
+			}
+			//check if the word exists in bodyId hashtable
+			if(!bodyId.exists(tempPhase[0]))
+				continue;
+			tempWordId = (String)bodyId.getEntryObject(tempPhase[0]);
+			//check if the word id exists in the idBody hashtable
+			if(!idBody.exists(tempPhase[0]))
+				continue;
+			tempWord = (Word)idBody.getEntryObject(tempWordId);
+			tempList = tempWord.getAllPostings();
+			iter = tempList.listIterator();
+			while(iter.hasNext()) {
+				tempPosting = iter.next();
+				tempUrlInfo = (urlInfo)idUrl.getEntryObject(tempPosting.getDocumentId());
+				for(int i =0;i < tempPosting.getPositionsByList().size();i++) {
+					for(int j =1;j< tempPhase.length;j++) {
+						if(tempPhase[j] != tempUrlInfo.getDocumentText().get(tempPosting.getPositionsByList().get(i)+j))
+							checker = false;
+					}
+					if(checker) {
+						filter.add(tempPosting.getDocumentId());
+					}
+				}
+			}
+		}
+		///////////////////////////////////////////////////////////////////////////////////////////
+		
+		
+		qIter = query.listIterator();
 		while(qIter.hasNext()) {
 			next = qIter.next();
 			if(stopStem.isStopWord(next))
@@ -99,7 +153,8 @@ public class VectorSpace {
 				continue;
 			tempWordId = (String)bodyId.getEntryObject(next);
 			//check if the word id exists in the idBody hashtable
-			if(!idBody.exists(tempWordId)) continue;
+			if(!idBody.exists(tempWordId))
+				continue;
 			tempWord = (Word)idBody.getEntryObject(tempWordId);
 			
 			
@@ -109,10 +164,10 @@ public class VectorSpace {
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
 				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
-				if(checkSimilarity(tempPosting.getDocumentId())) {
+				if(checkSimilarity(tempPosting.getDocumentId()) && !checkFilter(tempPosting.getDocumentId())) {
 					setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
 				}
-				else {
+				else if (!checkFilter(tempPosting.getDocumentId())) {
 					similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
 				}	
 			}
@@ -141,10 +196,10 @@ public class VectorSpace {
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
 				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
-				if(checkSimilarity(tempPosting.getDocumentId())) {
+				if(checkSimilarity(tempPosting.getDocumentId()) && !checkFilter(tempPosting.getDocumentId())) {
 					setSimilarity(tempPosting.getDocumentId(),tempWeight, false);
 				}
-				else {
+				else if (!checkFilter(tempPosting.getDocumentId())){
 					similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
 				}	
 			}
