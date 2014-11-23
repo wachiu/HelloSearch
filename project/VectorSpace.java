@@ -41,6 +41,8 @@ public class VectorSpace {
 	private StopStem stopStem;
 	private ArrayList<VectorScore> similarity;
 	private ArrayList<String> filter;
+	private ArrayList<String> matchTerms;
+	
 	public VectorSpace(ArrayList<String> query, ArrayList<String> phase) {
 		this.query = query;
 		this.phase = phase;
@@ -51,6 +53,7 @@ public class VectorSpace {
 		this.idTitle = GlobalFile.idTitle();
 		this.similarity = new ArrayList<VectorScore>();
 		this.filter = new ArrayList<String>();
+		this.matchTerms = new ArrayList<String>();
 	}
 	private Boolean checkSimilarity(String check) {
 		VectorScore temp;
@@ -62,7 +65,7 @@ public class VectorSpace {
 		return false;
 	}
 
-	private void setSimilarity(String check, double input, Boolean fromBody) {
+	private void setSimilarity(String check, double input, String word) {
 		VectorScore temp;
 		for(int i = 0; i < similarity.size();i++) {
 			temp = similarity.get(i);
@@ -70,8 +73,7 @@ public class VectorSpace {
 				temp.score += input;
 				
 				//only increase the match term if the method call from body
-				if(fromBody)
-					temp.matchTerms++;
+				temp.setMatchString(word);
 				
 				similarity.set(i, temp);
 				break;
@@ -199,20 +201,20 @@ public class VectorSpace {
 				if(checkSimilarity(tempPosting.getDocumentId())) {
 					if(useFilter) {
 						if(checkFilter(tempPosting.getDocumentId()))
-							setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
+							setSimilarity(tempPosting.getDocumentId(),tempWeight, tempWord.getWord());
 					}
 					else
-						setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
+						setSimilarity(tempPosting.getDocumentId(),tempWeight, tempWord.getWord());
 				}
 				else {
 					if(useFilter) {
 						if(checkFilter(tempPosting.getDocumentId())) {
-							similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
+							similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight).setMatchString(tempWord.getWord()));
 						}
 					}
 					else
-						similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
-				}	
+						similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight).setMatchString(tempWord.getWord()));
+				}
 			}
 		}
 		
@@ -242,19 +244,20 @@ public class VectorSpace {
 				if(checkSimilarity(tempPosting.getDocumentId())) {
 					if(useFilter) {
 						if(checkFilter(tempPosting.getDocumentId()))
-							setSimilarity(tempPosting.getDocumentId(),tempWeight, false);
+							setSimilarity(tempPosting.getDocumentId(),tempWeight, tempWord.getWord());
 					}
 					else
-						setSimilarity(tempPosting.getDocumentId(),tempWeight, false);
+						setSimilarity(tempPosting.getDocumentId(),tempWeight, tempWord.getWord());
 				}
 				else {
 					if(useFilter) {
 						if(checkFilter(tempPosting.getDocumentId())) {
-							similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
+							similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight).setMatchString(tempWord.getWord()));
+							
 						}
 					}
 					else
-						similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
+						similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight).setMatchString(tempWord.getWord()));
 				}
 			}
 		}
