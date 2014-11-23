@@ -158,6 +158,18 @@ public class QueryInfo {
 		return vso.matchTerms;
 	}
 	
+	public String getTitleText() {
+		String text = "";
+		
+		ArrayList<String> ss = info.getTitleText();
+		
+		for(int i = 0; i < ss.size(); i++) {
+			text += ss.get(i) + " ";
+		}
+		
+		return text.trim();
+	}
+	
 	/*
 	public String getDocumentText() {
 		ArrayList<String> text = info.getDocumentText();

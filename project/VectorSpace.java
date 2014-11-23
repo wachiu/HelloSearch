@@ -236,10 +236,10 @@ public class VectorSpace {
 				if(checkSimilarity(tempPosting.getDocumentId())) {
 					if(useFilter) {
 						if(checkFilter(tempPosting.getDocumentId()))
-							setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
+							setSimilarity(tempPosting.getDocumentId(),tempWeight, false);
 					}
 					else
-						setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
+						setSimilarity(tempPosting.getDocumentId(),tempWeight, false);
 				}
 				else {
 					if(useFilter) {

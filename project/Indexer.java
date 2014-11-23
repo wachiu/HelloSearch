@@ -154,6 +154,21 @@ public class Indexer {
 		idTitleIndex = GlobalFile.idTitle();
 	}
 	
+	public ArrayList<String> TitleDocumentText(String title) {
+		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(title);
+		
+		ArrayList<String> ss = new ArrayList<String>();
+		
+		String text;
+		
+		while(m.find()) {
+			text = m.group(1).toLowerCase();
+			ss.add(text);
+		}
+		
+		return ss;
+	}
+	
 	public ArrayList<String> BodyDocumentText(String body) {
 		body = body.replaceAll("<[^>]*>", "");	//remove all tags
 		

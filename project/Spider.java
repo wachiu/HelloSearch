@@ -64,6 +64,7 @@ class urlInfo implements Serializable {
 	private LinkedHashSet<String> bodyWordIds;
 	private TreeMap<String, Integer> bodyWordUniqCount;
 	private ArrayList<String> documentText;
+	private ArrayList<String> titleText;
 	
 	public urlInfo(String url, int parent) {
 		this.parent = new ArrayList<Integer>();
@@ -97,6 +98,10 @@ class urlInfo implements Serializable {
 		this.documentText = text;
 	}
 	
+	public void setTitleText(ArrayList<String> text) {
+		this.titleText = text;
+	}
+	
 	public LinkedHashSet<String> getTitleWordIds() {
 		return this.titleWordIds;
 	}
@@ -111,6 +116,10 @@ class urlInfo implements Serializable {
 	
 	public ArrayList<String> getDocumentText() {
 		return this.documentText;
+	}
+	
+	public ArrayList<String> getTitleText() {
+		return this.titleText;
 	}
 }
 
@@ -236,6 +245,8 @@ public class Spider
 			
 			tmp.setBodyUniqCount(indexer.BodyWordUniqCount(entryId, body));
 			tmp.setDocumentText(indexer.BodyDocumentText(body));
+			
+			tmp.setTitleText(indexer.TitleDocumentText(doc.title()));
 			
 			index.addEntry(entryId, tmp);
 			
