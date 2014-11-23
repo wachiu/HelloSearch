@@ -70,7 +70,6 @@
 						<span>words <span class="badge">3</span></span>
 					</div>
 					<div class="result-buttons">
-						<!-- <button class="children-links btn btn-primary btn-xs">Child Links</button> -->
 						<a href="#" tabindex="0" class="child-links btn btn-primary btn-xs" data-toggle="popover" data-trigger="focus" title="Child Links" data-content="">Child Links</a>
 						<a href="#" tabindex="0" class="parent-links btn btn-primary btn-xs" data-toggle="popover" data-trigger="focus" title="Parent Links" data-content="">Parent Links</a>
 						<button class="find-similar btn btn-primary btn-xs">Find Similar</button>
@@ -84,7 +83,8 @@
 			&copy; Hello Search 2014.
 		</footer> -->
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>-->
+		<script src="js/jquery.min.js"></script>
 		<script src="js/bootstrap.js"></script>
 		<script src="js/main.js"></script>
 	</body>
