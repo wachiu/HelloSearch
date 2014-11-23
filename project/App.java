@@ -254,8 +254,8 @@ public class App {
 			app.stem(args[1].toLowerCase());
 		}
 		else if(args[0].equals("links")) {
-			App app = new App(true);
 			try {
+				App app = new App(true);
 				app.links(args[1].toLowerCase());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

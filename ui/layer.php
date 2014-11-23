@@ -86,6 +86,22 @@ class App {
 		$this->results = json_decode($raw);
 	}
 
+	public function links() {
+
+		//check if any input words come in
+		if(isset($_POST['id'])) $this->query_str = $_POST['id'];
+		else return;
+
+		$raw = null;
+
+		//check if jar exists
+		if(file_exists('../executable/app.jar')) $raw = shell_exec('cd ../executable/ && java -jar app.jar links ' . escapeshellarg($this->query_str));
+		else return;
+
+		$this->results = json_decode($raw);
+
+	}
+
 	public function search() {
 
 		//check if any query come in

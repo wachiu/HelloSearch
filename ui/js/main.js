@@ -239,6 +239,7 @@ HelloSearch.prototype = {
 
 		newResult.find('.find-similar').attr('data-simquery', freqJoin);
 
+		/*
 		var childLinks = "";
 		$.each($.parseJSON(result.childrenLinks), function(index, value) {
 			childLinks += "<a href='" + value + "'>" + value + "</a><br>";
@@ -255,6 +256,7 @@ HelloSearch.prototype = {
 		newResult.find('.parent-links').popover({
 			html:true, placement:'left', content:parentLinks
 		});
+		*/
 		return newResult;
 	}
 }
