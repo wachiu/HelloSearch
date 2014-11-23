@@ -116,6 +116,7 @@ public class QueryInfo {
 				(String)this.bodyIdIndex.getEntryObject(word)
 			);
 			
+			//position will be null if no the selected word in document
 			Posting posting = w.getPosting(this.getUrlId());
 			if(posting == null) continue;
 			
@@ -125,6 +126,17 @@ public class QueryInfo {
 			if(positions.size() != 0) break;
 		}
 		
+		//if word can not be found in document, the keywords are appeared in the title
+		//so, display the first 10 text of the document
+		if(positions == null) {
+			documentText = info.getDocumentText();
+			for(int i = 0; i < 10 && i < documentText.size(); i++) {
+				text += documentText.get(i) + " ";
+			}
+			return text;
+		}
+		
+		//otherwise, return the part of document as document preview
 		firstposition = positions.getFirst();
 		
 		for(int i = firstposition - 10; i < firstposition + 10; i++) {
