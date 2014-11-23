@@ -75,10 +75,10 @@ public class App {
 		double microseconds;
 		
 		
-		Matcher m = Pattern.compile("\"[a-zA-Z ]+\"").matcher(query);
+		Matcher m = Pattern.compile("\"[a-zA-Z ]+\"").matcher(query.trim());
 		
 		
-		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.split(" ")));
+		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.trim().split(" ")));
 		ArrayList<String> phases = new ArrayList<String>();
 		
 		while(m.find()) {
@@ -89,7 +89,7 @@ public class App {
 			
 		ArrayList<VectorScore> ss = vs.compute();
 		
-		long start = System.nanoTime();
+		//long start = System.nanoTime();
 		
 		//*//
 		PrintWriter writer = new PrintWriter(System.out);
@@ -110,9 +110,9 @@ public class App {
 		//System.out.println(ja.toString());
 		//*/
 		
-		long end = System.nanoTime();
+		//long end = System.nanoTime();
 		
-		microseconds = (end - start) / 1000000000d;
+		//microseconds = (end - start) / 1000000000d;
 		//System.out.println(microseconds);
 		
 	}
@@ -132,21 +132,23 @@ public class App {
 		PrintWriter writer = new PrintWriter(System.out);
 		JSONWriter jsonwriter = new JSONWriter(writer).object().key("words");
 		
-		while((key = (String)iter.next()) != null) {
-			val = (urlInfo)idUrl.getEntryObject(key);
-			TreeMap<String, Integer> map = val.getBodyUniqCount();
-			
-			for(Entry<String, Integer> e : map.entrySet()) {
-				if(e.getKey().startsWith(lastWord)) {
-					if(suggestWords.indexOf(e.getKey()) != -1) continue;
-					
-					suggestWords.add(e.getKey());
-					break;
+		//suggest word only if last word is not empty
+		if(!lastWord.equals(""))
+			while((key = (String)iter.next()) != null) {
+				val = (urlInfo)idUrl.getEntryObject(key);
+				TreeMap<String, Integer> map = val.getBodyUniqCount();
+				
+				for(Entry<String, Integer> e : map.entrySet()) {
+					if(e.getKey().startsWith(lastWord)) {
+						if(suggestWords.indexOf(e.getKey()) != -1) continue;
+						
+						suggestWords.add(e.getKey());
+						break;
+					}
 				}
+				
+				if(suggestWords.size() >= 5) break;
 			}
-			
-			if(suggestWords.size() >= 5) break;
-		}
 		
 		jsonwriter.value(suggestWords).endObject();
 		
