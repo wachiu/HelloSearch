@@ -75,7 +75,7 @@ public class App {
 		double microseconds;
 		
 		
-		Matcher m = Pattern.compile("\"[a-zA-Z ]+\"").matcher(query.trim());
+		Matcher m = Pattern.compile("\"([a-zA-Z ]+)\"").matcher(query.trim());
 		
 		
 		ArrayList<String> al = new ArrayList<String>(Arrays.asList(query.trim().split(" ")));
