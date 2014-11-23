@@ -15,9 +15,9 @@ then
 elif [ "$1" == "suggest" ]
 then
 	cd executable && java -jar app.jar suggest "$2"
-#elif [ "$1" == "pagerank" ]
-#then
-#        cd executable && java -jar app.jar pagerank
+elif [ "$1" == "links" ]
+then
+        cd executable && java -jar app.jar links "$2"
 fi
 
 cd ..

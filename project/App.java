@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -72,7 +73,7 @@ public class App {
 	}
 	
 	public void search(String query) throws IOException {
-		double microseconds;
+		//double microseconds;
 		
 		
 		Matcher m = Pattern.compile("\"([a-zA-Z ]+)\"").matcher(query.trim());
@@ -89,8 +90,8 @@ public class App {
 			
 		ArrayList<VectorScore> ss = vs.compute();
 		
-		//long start = System.nanoTime();
 		
+		//long start = System.nanoTime();
 		//*//
 		PrintWriter writer = new PrintWriter(System.out);
 		JSONWriter jsonwriter = new JSONWriter(writer).array();
@@ -177,6 +178,41 @@ public class App {
 		writer.close();
 	}
 	
+	public void links(String documentId) throws IOException {
+		InvertedIndex idUrl = GlobalFile.idUrl();
+		
+		if(idUrl.exists(documentId)) {
+			urlInfo info = (urlInfo)idUrl.getEntryObject(documentId);
+			PrintWriter writer = new PrintWriter(System.out);
+			JSONWriter jsonwriter = new JSONWriter(writer).object().key("parents");
+			
+			List<Integer> parent = info.parent;
+			List<Integer> children = info.children;
+			
+			JSONArray ja = new JSONArray();
+			
+			for(Integer id : parent) {
+				ja.put(((urlInfo)idUrl.getEntryObject(id + "")).url);
+			}
+			
+			jsonwriter.value(ja);
+			
+			ja = new JSONArray();
+			
+			jsonwriter.key("children");
+			
+			for(Integer id : children) {
+				ja.put(((urlInfo)idUrl.getEntryObject(id + "")).url);
+			}
+			
+			jsonwriter.value(ja).endObject();
+			
+			writer.flush();
+			writer.close();
+		}
+		
+	}
+	
 	public static void main (String[] args) {
 		if(args.length == 0) return;
 		//*//
@@ -216,6 +252,15 @@ public class App {
 		else if(args[0].equals("stem")) {
 			App app = new App(false);
 			app.stem(args[1].toLowerCase());
+		}
+		else if(args[0].equals("links")) {
+			App app = new App(true);
+			try {
+				app.links(args[1].toLowerCase());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		/*/

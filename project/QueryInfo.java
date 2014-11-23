@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import jdbm.helper.FastIterator;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -76,7 +78,10 @@ public class QueryInfo {
 		return ja.toString();
 	}
 	
+	/*
 	public String getChildrenLinks() throws IOException {
+
+		
 		List<Integer> children = info.children;
 		
 		JSONArray ja = new JSONArray();
@@ -89,6 +94,8 @@ public class QueryInfo {
 	}
 	
 	public String getParentLinks() throws IOException {
+		
+		
 		List<Integer> parent = info.parent;
 		
 		JSONArray ja = new JSONArray();
@@ -99,6 +106,7 @@ public class QueryInfo {
 		
 		return ja.toString();
 	}
+	*/
 	
 	public String getDocumentText() throws IOException {
 		if(queryString.size() == 0) return "";
