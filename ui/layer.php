@@ -74,7 +74,7 @@ class App {
 	public function suggest() {
 
 		//check if any input words come in
-		if(isset($_GET['query'])) $this->query_str = $_GET['query'];
+		if(isset($_POST['query'])) $this->query_str = $_POST['query'];
 		else return;
 
 		$raw = null;

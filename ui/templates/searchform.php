@@ -8,5 +8,7 @@
 			<div class="searching"></div>
 			<input name="query" class="form-control" value="" autocomplete="off">
 		</div>
+		<div class="autocomplete">
+		</div>
 	</form>
 </div><!-- /.container -->

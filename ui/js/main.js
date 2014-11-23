@@ -1,5 +1,53 @@
 var monthNames = [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ];
 
+var HelloAutoComplete = function(input) {
+	this.input = input;
+	this.lock = 0;
+}
+
+HelloAutoComplete.prototype = {
+	constructor: HelloAutoComplete,
+	init: function() {
+		var self = this;
+		self.input.on('input', function() {
+			var query = self.input.val();
+			if(query.slice(-1) != " ") self.aa(query);
+			else self.clear();
+		});
+		$('body').on('click', '.autocomplete span', function() {
+			var query = self.input.val();
+			var newQuery = query.substring(0, query.lastIndexOf(" ")) + " " + $(this).text();
+			self.input.val($.trim(newQuery));
+			self.clear();
+			self.input.focus();
+		});
+	},
+	aa: function(query) {
+		var self = this;
+		var lock = self.lock++;
+		setTimeout(function() {
+			if(lock+1 == self.lock) {
+				console.log("go!");
+				$.ajax({
+					url: 'suggest.php',
+					type: "POST",
+					data: { query: query },
+					success: function(data) {
+						self.clear();
+						$.each($.parseJSON(data).results.words, function(i,v) {
+							$('.autocomplete').append('<span>' + v + '</span> ');
+						});
+					}
+				});
+			}
+		},400);
+
+	},
+	clear: function() {
+		$('.autocomplete').html("");
+	}
+}
+
 var HelloHistory = function() {
 	this.storedHistory;
 	this.itemTemplate = $('.history-item').clone();
@@ -78,11 +126,13 @@ var HelloSearch = function(form) {
 	this.resultTemplate = $('.result').clone();
 	this.searched = false;
 	this.history = new HelloHistory();
+	this.autocomplete = new HelloAutoComplete(this.form.find('input'));
 };
 HelloSearch.prototype = {
 	constructor: HelloSearch,
 	init: function() {
 		var self = this;
+		self.autocomplete.init();
 		self.history.init();
 		self.form.submit(function(e) {
 			e.preventDefault();
@@ -133,7 +183,7 @@ HelloSearch.prototype = {
 	},
 	showResults: function(data) {
 		var self = this;
-		console.log(data);
+		// console.log(data);
 		data = $.parseJSON(data);
 		var results = data.results;
 		var query_str = data.query_str;
