@@ -116,7 +116,7 @@ public class VectorSpace {
 		else
 			useFilter = true;
 
-		//////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////Body filter//////////////////////////////////////////////////
 		while(qIter.hasNext()) {//loop Phase
 			next = qIter.next();
 			tempPhase = next.split(" ");
@@ -162,7 +162,47 @@ public class VectorSpace {
 					else
 						checker = true;
 				}
+				
 			}
+			//////////////////////////////////////////////title filter///////////////////////////////////////////////////
+			if(!titleId.exists(tempStemPhase[0]))
+				continue;
+			tempWordId = (String)titleId.getEntryObject(tempStemPhase[0]);
+			
+			//check if the word id exists in the idBody hashtable
+			if(!idTitle.exists(tempWordId)) {
+				continue;
+			}
+			tempWord = (Word)idTitle.getEntryObject(tempWordId);
+//			System.out.print(tempWord.getWord());
+//			System.out.println();
+			tempList = tempWord.getAllPostings();
+			iter = tempList.listIterator();
+			while(iter.hasNext()) {
+				tempPosting = iter.next();
+				tempUrlInfo = (urlInfo)idUrl.getEntryObject(tempPosting.getDocumentId());
+				for(int i =0;i < tempPosting.getPositionsByList().size();i++) {
+					for(int j =1;j< tempPhase.length;j++) {
+						if((tempPosting.getPositionsByList().get(i)+j) < tempUrlInfo.getTitleText().size()) {
+							if(!tempPhase[j].equals(tempUrlInfo.getTitleText().get(tempPosting.getPositionsByList().get(i)+j))) {
+								checker = false;
+							}
+						}
+						else
+							checker = false;
+							
+					}
+					if(checker) {
+						System.out.print(tempPosting.getDocumentId());
+						System.out.println();
+						filter.add(tempPosting.getDocumentId());
+					}
+					else
+						checker = true;
+				}
+				
+			}
+			/////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
 		HashSet hs = new HashSet();
 		hs.addAll(filter);
