@@ -101,7 +101,6 @@ public class VectorSpace {
 		String next;
 		LinkedList<Posting> tempList;
 		ListIterator<Posting> iter;
-		//ListIterator<String> qIter = query.listIterator();
 		Posting tempPosting;
 		String[] tempPhase;
 		String[] tempStemPhase;
@@ -116,7 +115,7 @@ public class VectorSpace {
 		else
 			useFilter = true;
 
-		//////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////Body filter//////////////////////////////////////////////////
 		while(qIter.hasNext()) {//loop Phase
 			next = qIter.next();
 			tempPhase = next.split(" ");
@@ -136,8 +135,7 @@ public class VectorSpace {
 				continue;
 			}
 			tempWord = (Word)idBody.getEntryObject(tempWordId);
-//			System.out.print(tempWord.getWord());
-//			System.out.println();
+
 			tempList = tempWord.getAllPostings();
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
@@ -145,8 +143,6 @@ public class VectorSpace {
 				tempUrlInfo = (urlInfo)idUrl.getEntryObject(tempPosting.getDocumentId());
 				for(int i =0;i < tempPosting.getPositionsByList().size();i++) {
 					for(int j =1;j< tempPhase.length;j++) {
-//						System.out.print((tempPosting.getPositionsByList().get(i)+j) + " "+tempUrlInfo.getDocumentText().size());
-//						System.out.println();
 						if((tempPosting.getPositionsByList().get(i)+j) < tempUrlInfo.getDocumentText().size()) {
 							if(!tempPhase[j].equals(tempUrlInfo.getDocumentText().get(tempPosting.getPositionsByList().get(i)+j))) {
 								checker = false;
@@ -162,7 +158,44 @@ public class VectorSpace {
 					else
 						checker = true;
 				}
+				
 			}
+			//////////////////////////////////////////////title filter///////////////////////////////////////////////////
+			if(!titleId.exists(tempStemPhase[0]))
+				continue;
+			tempWordId = (String)titleId.getEntryObject(tempStemPhase[0]);
+			
+			//check if the word id exists in the idBody hashtable
+			if(!idTitle.exists(tempWordId)) {
+				continue;
+			}
+			tempWord = (Word)idTitle.getEntryObject(tempWordId);
+
+			tempList = tempWord.getAllPostings();
+			iter = tempList.listIterator();
+			while(iter.hasNext()) {
+				tempPosting = iter.next();
+				tempUrlInfo = (urlInfo)idUrl.getEntryObject(tempPosting.getDocumentId());
+				for(int i =0;i < tempPosting.getPositionsByList().size();i++) {
+					for(int j =1;j< tempPhase.length;j++) {
+						if((tempPosting.getPositionsByList().get(i)+j) < tempUrlInfo.getTitleText().size()) {
+							if(!tempPhase[j].equals(tempUrlInfo.getTitleText().get(tempPosting.getPositionsByList().get(i)+j))) {
+								checker = false;
+							}
+						}
+						else
+							checker = false;
+							
+					}
+					if(checker) {
+						filter.add(tempPosting.getDocumentId());
+					}
+					else
+						checker = true;
+				}
+				
+			}
+			/////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
 		HashSet hs = new HashSet();
 		hs.addAll(filter);
