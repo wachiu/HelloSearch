@@ -15,6 +15,7 @@ HelloHistory.prototype = {
 		$('nav .his').click(function() {
 			$('.history').toggle();
 		});
+		$('.form-control[name=query]').focus();
 	},
 	populate: function() {
 		var self = this;
