@@ -218,7 +218,7 @@ public class Indexer {
 		Matcher m = Pattern.compile("([A-Za-z0-9']+)").matcher(title);
 		String objid = "";
 		
-		int position = 0;
+		int position = -1;
 		while(m.find()) {
 			++position;
 		    String text = m.group(1).toLowerCase();
