@@ -44,7 +44,7 @@ HelloHistory.prototype = {
 		$('.history-list').append("<p class='message'>You have no search history.</p>");
 	},
 	retrieve: function() {
-		return JSON.parse(localStorage.getItem('helloHistory'));
+		return $.parseJSON(localStorage.getItem('helloHistory'));
 	},
 	store: function(string) {
 		localStorage.setItem('helloHistory', string);
@@ -95,6 +95,13 @@ HelloSearch.prototype = {
 		window.onpopstate = function(event) {
 			if(event.state != null) self.simSearch(event.state);
 		};
+
+		$('body').on('click', '.find-similar', function() {
+			self.simSearch($(this).data('simquery'));
+		});
+		$('body').on('click', '.child-links, .parent-links', function(e) {
+			e.preventDefault();
+		});
 	},
 	simSearch: function(query) {
 		this.form.find('input').val(query);
@@ -127,7 +134,7 @@ HelloSearch.prototype = {
 	showResults: function(data) {
 		var self = this;
 		console.log(data);
-		data = JSON.parse(data);
+		data = $.parseJSON(data);
 		var results = data.results;
 		var query_str = data.query_str;
 		var has_query = data.has_query;
@@ -160,16 +167,38 @@ HelloSearch.prototype = {
 		var newResult = self.resultTemplate.clone();
 		newResult.find('.result-title').text(result.pageTitle).attr('href', result.url);
 		newResult.find('.result-url').text(result.url).attr('href', result.url);
-		newResult.find('.result-modified').text(result.lastModified);
+		newResult.find('.result-text').html(result.documentText + "...");
+		newResult.find('.result-modified span').text(result.lastModified);
+		newResult.find('.result-item').text(result.matchTerms);
 		newResult.find('.result-score').text(parseFloat(result.score).toFixed(2));
-		newResult.find('.result-size').text(parseFloat((result.size)/1024).toFixed(2) + " kb");	
+		newResult.find('.result-size').text(parseFloat((result.size)/1024).toFixed(2) + " KB");	
 
+		var freqJoin = "";
 		var wordFreqs = $.parseJSON(result.wordFreqs);
 		newResult.find('.result-frequent').html($(wordFreqs.map(function(v) {
 			v = v.split("=");
+			freqJoin += v[0]+" ";
 			return '<span>' + v[0] + ' <span class="badge">' + v[1] + '</span></span>';
 		})).get().join(""));
 
+		newResult.find('.find-similar').attr('data-simquery', freqJoin);
+
+		var childLinks = "";
+		$.each($.parseJSON(result.childrenLinks), function(index, value) {
+			childLinks += "<a href='" + value + "'>" + value + "</a><br>";
+		});
+		if(childLinks == "") childLinks = "No child links."
+		newResult.find('.child-links').popover({
+			html:true, placement:'left', content:childLinks
+		});
+		var parentLinks = "";
+		$.each($.parseJSON(result.parentLinks), function(index, value) {
+			parentLinks += "<a href='" + value + "'>" + value + "</a><br>";
+		});
+		if(parentLinks == "") parentLinks = "No parent links."
+		newResult.find('.parent-links').popover({
+			html:true, placement:'left', content:parentLinks
+		});
 		return newResult;
 	}
 }

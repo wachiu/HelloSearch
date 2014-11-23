@@ -24,8 +24,13 @@ public class App {
 	private Indexer indexer;
 	private Spider spider;
 	
-	public App() {
-
+	public App(Boolean loadInvertedIndex) {
+		try {
+			GlobalFile.init(loadInvertedIndex);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void run() {
@@ -67,6 +72,8 @@ public class App {
 	}
 	
 	public void search(String query) throws IOException {
+		double microseconds;
+		
 		
 		Matcher m = Pattern.compile("\"[a-zA-Z ]+\"").matcher(query);
 		
@@ -81,11 +88,32 @@ public class App {
 		VectorSpace vs = new VectorSpace(al, phases);
 			
 		ArrayList<VectorScore> ss = vs.compute();
-			
+		
+		long start = System.nanoTime();
+		
+		//*//
+		PrintWriter writer = new PrintWriter(System.out);
+		JSONWriter jsonwriter = new JSONWriter(writer).array();
+		
+		for(VectorScore vso:ss)
+			jsonwriter.value(new JSONObject(new QueryInfo(vso, al)));
+		
+		jsonwriter.endArray();
+		
+		writer.flush();
+		//writer.close();
+		/*/
+		
 		JSONArray ja = new JSONArray();
 		for(VectorScore vso:ss)
 			ja.put(new JSONObject(new QueryInfo(vso, al)));
-		System.out.println(ja.toString());
+		//System.out.println(ja.toString());
+		//*/
+		
+		long end = System.nanoTime();
+		
+		microseconds = (end - start) / 1000000000d;
+		//System.out.println(microseconds);
 		
 	}
 	
@@ -96,7 +124,7 @@ public class App {
 		//get the last word of query
 		String lastWord = al.get(al.size() - 1);
 		//Map<String, String> map = new HashMap<String, String>();
-		InvertedIndex idUrl = new InvertedIndex("idUrl", "ht1");
+		InvertedIndex idUrl = GlobalFile.idUrl();
 		FastIterator iter = idUrl.getIteratorKeys();
 		String key;
 		urlInfo val;
@@ -127,7 +155,7 @@ public class App {
 	}
 	
 	public void stem(String words) {
-		StopStem stopStem = new StopStem("stopwords.txt");
+		StopStem stopStem = GlobalFile.stopStem();
 		
 		ArrayList<String> al = new ArrayList<String>(Arrays.asList(words.split(" ")));
 		ArrayList<String> alStem = new ArrayList<String>();
@@ -150,11 +178,11 @@ public class App {
 	public static void main (String[] args) {
 		if(args.length == 0) return;
 		//*//
-		App app = new App();
 		
 		//check the action that not require args
 		args[0] = args[0].toLowerCase();
 		if(args[0].equals("index")) {
+			App app = new App(true);
 			app.run();
 		}
 		//else if(args[0].equals("pagerank")) {
@@ -167,6 +195,7 @@ public class App {
 		args[1] = args[1].toLowerCase();
 		if(args[0].equals("query") || args[0].equals("search")) {
 			try {
+				App app = new App(true);
 				app.search(args[1].toLowerCase());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -175,6 +204,7 @@ public class App {
 		}
 		else if(args[0].equals("suggest")) {
 			try {
+				App app = new App(true);
 				app.suggest(args[1].toLowerCase());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -182,6 +212,7 @@ public class App {
 			}	
 		}
 		else if(args[0].equals("stem")) {
+			App app = new App(false);
 			app.stem(args[1].toLowerCase());
 		}
 		

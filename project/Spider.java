@@ -125,8 +125,8 @@ public class Spider
 	Spider(String url, int pages, Indexer indexer) throws IOException {
 		this.url = url;
 		this.pages = pages;
-		index = new InvertedIndex("idUrl","ht1");
-		urlIdIndex = new InvertedIndex("urlId","ht1");
+		index = GlobalFile.idUrl();
+		urlIdIndex = GlobalFile.urlId();
 		this.indexer = indexer;
 	}
 	
@@ -223,16 +223,19 @@ public class Spider
 		
 		index.addEntry(info.key, info);
 		if(!crawled) {
+			String body = doc.body().toString();
+			body = body.replaceAll("nbsp", "");
+			
 			urlIdIndex.addEntry(info.url, info.key);
 			LinkedHashSet<String> titleWordIds = indexer.IndexTitle(entryId, doc.title());
-			LinkedHashSet<String> bodyWordIds = indexer.IndexBody(entryId, doc.body().toString());
+			LinkedHashSet<String> bodyWordIds = indexer.IndexBody(entryId, body);
 			
 			urlInfo tmp = (urlInfo)index.getEntryObject(entryId);
 			tmp.setTitleWordIds(titleWordIds);
 			tmp.setBodyWordIds(bodyWordIds);
 			
-			tmp.setBodyUniqCount(indexer.BodyWordUniqCount(entryId, doc.body().toString()));
-			tmp.setDocumentText(indexer.BodyDocumentText(doc.body().toString()));
+			tmp.setBodyUniqCount(indexer.BodyWordUniqCount(entryId, body));
+			tmp.setDocumentText(indexer.BodyDocumentText(body));
 			
 			index.addEntry(entryId, tmp);
 			

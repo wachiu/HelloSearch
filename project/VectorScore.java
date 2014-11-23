@@ -3,9 +3,16 @@ package project;
 public class VectorScore {
 	String urlId;
 	double score;
-	VectorScore(String id, double temp) {
+	int matchTerms;
+	
+	VectorScore(String id, double temp, int matchTerms) {
 		this.urlId = id;
 		this.score = temp;
+		this.matchTerms = matchTerms;
+	}
+	
+	public int getMatchTerms() {
+		return this.matchTerms;
 	}
 	
 	public double getScore() {

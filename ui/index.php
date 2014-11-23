@@ -27,32 +27,38 @@
 					<div class="history-date"></div>
 				</div>
 			</div>
-			<button class="btn btn-default history-clear">Clear History</button>
+			<button class="btn btn-danger history-clear">Clear History</button>
 		</div>
 
 		<div class="container results">
 			<p>Showing <span class="results-count"></span> results (<span class="results-time"></span> seconds)</p>
 
 			<div class="result row">
-				<div class="col-sm-9">
+				<div class="col-sm-8">
 					<div class="result-header">
 						<a class="result-title" href="#"></a>
 						<a class="result-url" href="#"></a>
+						<span class="result-modified">Last Modified: <span></span>,</span>
+						<span>Size: <span class="result-size">- KB</span></span>
 					</div>
 					<div class="result-body">
-						<span>Last Modified: <span class="result-modified"></span></span>
+						<span class="result-text"></span>
 					</div>
 				</div>
-				<div class="col-sm-3">
+				<div class="col-sm-4">
 					<div class="result-stats">
+						<div class="result-stat">
+							<small>Match(es)</small>
+							<span class="result-item">-</span>
+						</div>
 						<div class="result-stat">
 							<small>Score</small>
 							<span class="result-score">-</span>
 						</div>
-						<div class="result-stat">
+						<!-- <div class="result-stat">
 							<small>Size</small>
 							<span class="result-size">- kb</span>
-						</div>
+						</div> -->
 					</div>
 				</div>
 				<div class="col-sm-12">
@@ -63,6 +69,13 @@
 						<span>frequent <span class="badge">3</span></span>
 						<span>words <span class="badge">3</span></span>
 					</div>
+					<div class="result-buttons">
+						<!-- <button class="children-links btn btn-primary btn-xs">Child Links</button> -->
+						<a href="#" tabindex="0" class="child-links btn btn-primary btn-xs" data-toggle="popover" data-trigger="focus" title="Child Links" data-content="">Child Links</a>
+						<a href="#" tabindex="0" class="parent-links btn btn-primary btn-xs" data-toggle="popover" data-trigger="focus" title="Parent Links" data-content="">Parent Links</a>
+						<button class="find-similar btn btn-primary btn-xs">Find Similar</button>
+					</div>
+					<div class="result-parents"></div>
 				</div>
 			</div>
 		</div>
