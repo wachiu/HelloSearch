@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.lang.Math.*;
-
+import java.util.HashSet;
 import jdbm.helper.FastIterator;
 
 class VectorScoreComparator implements Comparator<VectorScore> {
@@ -102,26 +102,35 @@ public class VectorSpace {
 		//ListIterator<String> qIter = query.listIterator();
 		Posting tempPosting;
 		String[] tempPhase;
+		String[] tempStemPhase;
 		ListIterator<String> qIter = phase.listIterator();
 		Boolean checker = true;
 		InvertedIndex idUrl = GlobalFile.idUrl();
 		urlInfo tempUrlInfo;
 		
+
 		//////////////////////////////////////////////////////////////////////////////////////
 		while(qIter.hasNext()) {//loop Phase
 			next = qIter.next();
 			tempPhase = next.split(" ");
+			tempStemPhase = next.split(" ");
+			
 			for(int i =0;i<tempPhase.length;i++) {//stem all phases
-				tempPhase[i] = stopStem.stem(tempPhase[i]);
+				tempStemPhase[i] = stopStem.stem(tempPhase[i]);
 			}
+
 			//check if the word exists in bodyId hashtable
-			if(!bodyId.exists(tempPhase[0]))
+			if(!bodyId.exists(tempStemPhase[0]))
 				continue;
-			tempWordId = (String)bodyId.getEntryObject(tempPhase[0]);
+			tempWordId = (String)bodyId.getEntryObject(tempStemPhase[0]);
+			
 			//check if the word id exists in the idBody hashtable
-			if(!idBody.exists(tempPhase[0]))
+			if(!idBody.exists(tempWordId)) {
 				continue;
+			}
 			tempWord = (Word)idBody.getEntryObject(tempWordId);
+//			System.out.print(tempWord.getWord());
+//			System.out.println();
 			tempList = tempWord.getAllPostings();
 			iter = tempList.listIterator();
 			while(iter.hasNext()) {
@@ -129,15 +138,27 @@ public class VectorSpace {
 				tempUrlInfo = (urlInfo)idUrl.getEntryObject(tempPosting.getDocumentId());
 				for(int i =0;i < tempPosting.getPositionsByList().size();i++) {
 					for(int j =1;j< tempPhase.length;j++) {
-						if(tempPhase[j] != tempUrlInfo.getDocumentText().get(tempPosting.getPositionsByList().get(i)+j))
+//						System.out.print(tempPhase[j]);
+//						System.out.println();
+						if(!tempPhase[j].equals(tempUrlInfo.getDocumentText().get(tempPosting.getPositionsByList().get(i)+j)))
 							checker = false;
 					}
 					if(checker) {
 						filter.add(tempPosting.getDocumentId());
 					}
+					else
+						checker = true;
 				}
 			}
 		}
+		HashSet hs = new HashSet();
+		hs.addAll(filter);
+		filter.clear();
+		filter.addAll(hs);
+//		for(int i = 0;i< filter.size();i++) {
+//			System.out.print(filter.get(i));
+//			System.out.println();
+//		}
 		///////////////////////////////////////////////////////////////////////////////////////////
 		
 		
@@ -164,10 +185,10 @@ public class VectorSpace {
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
 				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
-				if(checkSimilarity(tempPosting.getDocumentId()) && !checkFilter(tempPosting.getDocumentId())) {
+				if(checkSimilarity(tempPosting.getDocumentId()) && checkFilter(tempPosting.getDocumentId())) {
 					setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
 				}
-				else if (!checkFilter(tempPosting.getDocumentId())) {
+				else if (checkFilter(tempPosting.getDocumentId())) {
 					similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
 				}	
 			}
@@ -196,10 +217,10 @@ public class VectorSpace {
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
 				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
-				if(checkSimilarity(tempPosting.getDocumentId()) && !checkFilter(tempPosting.getDocumentId())) {
+				if(checkSimilarity(tempPosting.getDocumentId()) && checkFilter(tempPosting.getDocumentId())) {
 					setSimilarity(tempPosting.getDocumentId(),tempWeight, false);
 				}
-				else if (!checkFilter(tempPosting.getDocumentId())){
+				else if (checkFilter(tempPosting.getDocumentId())){
 					similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
 				}	
 			}
