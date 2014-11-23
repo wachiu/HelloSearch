@@ -239,39 +239,41 @@ HelloSearch.prototype = {
 
 		newResult.find('.find-similar').attr('data-simquery', freqJoin);
 
-		/*
-		var childLinks = "";
-		$.each($.parseJSON(result.childrenLinks), function(index, value) {
-			childLinks += "<a href='" + value + "'>" + value + "</a><br>";
+		newResult.find('.parent-links, .child-links').popover({
+			html:true, placement:'left', content:"<img src='../images/searching.gif'>"
 		});
-		if(childLinks == "") childLinks = "No child links."
-		newResult.find('.child-links').popover({
-			html:true, placement:'left', content:childLinks
-		});
-		var parentLinks = "";
-		$.each($.parseJSON(result.parentLinks), function(index, value) {
-			parentLinks += "<a href='" + value + "'>" + value + "</a><br>";
-		});
-		if(parentLinks == "") parentLinks = "No parent links."
-		newResult.find('.parent-links').popover({
-			html:true, placement:'left', content:parentLinks
-		});
-		*/
-		newResult.find('.parent-links').click(function() {
+
+		newResult.find('.parent-links, .child-links').click(function() {
 			var id = result.urlId;
 			var that = $(this);
+			var pObject = newResult.find('.parent-links');
+			var cObject = newResult.find('.child-links');
 			if($(this).data('fetched') != 'true') {
 				$.ajax({
-					url: "suggest.php",
-					type: "GET",
-					data: { query: id },
+					url: "links.php",
+					type: "POST",
+					data: { id: id },
 					success: function(data) {
 						var data = $.parseJSON(data);
-						if(that.data('bs.popover')) {
-						    that.data('bs.popover').options.content = data + "test";
-						    that.data('fetched', 'true');
-						    that.popover('show');
+						var pLinks = ""
+						var cLinks = ""
+						$.each(data.results.parents, function(k,v) {
+							pLinks += "<a href='" + v + "'>" + v + "</a><br>";
+						});
+						$.each(data.results.children, function(k,v) {
+							cLinks += "<a href='" + v + "'>" + v + "</a><br>";
+						});
+						if(cLinks == "") cLinks = "No child links.";
+						if(pLinks == "") pLinks = "No parent links.";
+						if(pObject.data('bs.popover')) {
+						    pObject.data('bs.popover').options.content = pLinks;
+						    pObject.data('fetched', 'true');
 						}
+						if(cObject.data('bs.popover')) {
+						    cObject.data('bs.popover').options.content = cLinks;
+						    cObject.data('fetched', 'true');
+						}
+						that.popover('show');
 					},
 				});
 			}
