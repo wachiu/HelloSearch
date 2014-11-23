@@ -139,7 +139,7 @@ public class App {
 				TreeMap<String, Integer> map = val.getBodyUniqCount();
 				
 				for(Entry<String, Integer> e : map.entrySet()) {
-					if(e.getKey().startsWith(lastWord)) {
+					if(e.getKey().startsWith(lastWord) && !e.getKey().equals(lastWord)) {
 						if(suggestWords.indexOf(e.getKey()) != -1) continue;
 						
 						suggestWords.add(e.getKey());
