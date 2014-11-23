@@ -107,7 +107,12 @@ public class VectorSpace {
 		Boolean checker = true;
 		InvertedIndex idUrl = GlobalFile.idUrl();
 		urlInfo tempUrlInfo;
+		Boolean useFilter;
 		
+		if(phase.isEmpty())
+			useFilter = false;
+		else
+			useFilter = true;
 
 		//////////////////////////////////////////////////////////////////////////////////////
 		while(qIter.hasNext()) {//loop Phase
@@ -185,11 +190,22 @@ public class VectorSpace {
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
 				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
-				if(checkSimilarity(tempPosting.getDocumentId()) && checkFilter(tempPosting.getDocumentId())) {
-					setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
+				if(checkSimilarity(tempPosting.getDocumentId())) {
+					if(useFilter) {
+						if(checkFilter(tempPosting.getDocumentId()))
+							setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
+					}
+					else
+						setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
 				}
-				else if (checkFilter(tempPosting.getDocumentId())) {
-					similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
+				else {
+					if(useFilter) {
+						if(checkFilter(tempPosting.getDocumentId())) {
+							similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
+						}
+					}
+					else
+						similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
 				}	
 			}
 		}
@@ -217,12 +233,23 @@ public class VectorSpace {
 			while(iter.hasNext()) {
 				tempPosting = iter.next();
 				tempWeight = ((double)tempPosting.tf() / (double)tempWord.maxTf()) * (Math.log10((double)(300.00/tempWord.df()))/Math.log10(2.00));
-				if(checkSimilarity(tempPosting.getDocumentId()) && checkFilter(tempPosting.getDocumentId())) {
-					setSimilarity(tempPosting.getDocumentId(),tempWeight, false);
+				if(checkSimilarity(tempPosting.getDocumentId())) {
+					if(useFilter) {
+						if(checkFilter(tempPosting.getDocumentId()))
+							setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
+					}
+					else
+						setSimilarity(tempPosting.getDocumentId(),tempWeight, true);
 				}
-				else if (checkFilter(tempPosting.getDocumentId())){
-					similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
-				}	
+				else {
+					if(useFilter) {
+						if(checkFilter(tempPosting.getDocumentId())) {
+							similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
+						}
+					}
+					else
+						similarity.add(new VectorScore(tempPosting.getDocumentId(), tempWeight, 1));
+				}
 			}
 		}
 		Comparator comparator = new VectorScoreComparator();
