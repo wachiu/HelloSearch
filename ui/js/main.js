@@ -165,11 +165,10 @@ HelloSearch.prototype = {
 	},
 	search: function() {
 		var self = this;
-		var input = self.form.find('input');
-		if(input.val() == "") {
+		var query = $.trim(self.form.find('input').val());
+		if(query == "") {
 
 		} else {
-			var query = self.form.find('input').val();
 			$.ajax({
 				url: self.form.attr('action'),
 				type: "GET",
@@ -182,7 +181,7 @@ HelloSearch.prototype = {
 				},
 				complete: function() {
 					$('.searching').stop(true).fadeOut();
-					self.history.add(input.val());
+					self.history.add(query);
 				}
 			});
 		}
